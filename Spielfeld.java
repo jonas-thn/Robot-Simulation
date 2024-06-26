@@ -1,6 +1,7 @@
 import java.util.*;
 import java.awt.Color;
 import java.io.PushbackInputStream;
+import javax.swing.Box;
 
 /**
  * Beschreiben Sie hier die Klasse Spielfeld.
@@ -49,14 +50,14 @@ public class Spielfeld
         {   
             bot.bewegeRechts(); //fahre einen pixel nach rechts
             rechts = true;
-            if(bot.roboterUeberlappt(hindernisse)) { //teste ob überlappt
+            if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
                 bot.bewegeLinks(); //wenn ja, dann wieder zurück
                 rechts = false;
             }
             
             bot.bewegeUnten(); //fahre einen pixel nach unten
             unten = true;
-            if(bot.roboterUeberlappt(hindernisse)) { //teste ob überlappt
+            if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
                 bot.bewegeOben(); //wenn ja, wieder zurück
                 unten = false;
             } 
@@ -64,8 +65,8 @@ public class Spielfeld
             if(!rechts && !unten){
                 ende = true; //wenn unten und rechts überlappt, dann ende
             }
-            
-            if(bot.maxX() == 1000 || bot.maxY() == 1000) {
+
+            if(bot.maxX() == 1000 && bot.maxY() == 1000) {
                 ende = true; //wenn rand des spielfeldes erreicht dann ende
             }
             
