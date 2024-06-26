@@ -1,0 +1,25 @@
+#BlueJ class context
+comment0.target=Kreis
+comment1.params=
+comment1.target=Kreis()
+comment10.params=
+comment10.target=int\ getMidX()
+comment11.params=
+comment11.target=int\ getMidY()
+comment2.params=position\ radius\ bezeichnung\ farbe
+comment2.target=Kreis(Punkt,\ int,\ java.lang.String,\ java.awt.Color)
+comment3.params=
+comment3.target=void\ ausgabeAttribute()
+comment4.params=radius
+comment4.target=void\ setRadius(int)
+comment5.params=
+comment5.target=int\ getRadius()
+comment6.params=
+comment6.target=int\ minX()
+comment7.params=
+comment7.target=int\ minY()
+comment8.params=
+comment8.target=int\ maxX()
+comment9.params=
+comment9.target=int\ maxY()
+numComments=12

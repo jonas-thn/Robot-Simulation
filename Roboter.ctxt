@@ -1,0 +1,13 @@
+#BlueJ class context
+comment0.target=Roboter
+comment1.params=
+comment1.target=Roboter()
+comment2.params=position\ radius\ bezeichnung\ farbe
+comment2.target=Roboter(Punkt,\ int,\ java.lang.String,\ java.awt.Color)
+comment3.params=
+comment3.target=Roboter\ getInstanz()
+comment4.params=hindernisse
+comment4.target=boolean\ roboterUeberlappt(java.util.ArrayList)
+comment5.params=
+comment5.target=void\ spracherkennung()
+numComments=6

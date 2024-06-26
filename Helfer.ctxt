@@ -1,0 +1,12 @@
+#BlueJ class context
+comment0.target=Helfer
+comment1.params=von\ bis
+comment1.target=int\ zufallszahl(int,\ int)
+comment2.params=
+comment2.target=java.awt.Color\ zufallsfarbe()
+comment3.params=
+comment3.target=Punkt\ zufallsPunkt()
+comment4.params=millisekunden
+comment4.target=void\ warten(int)
+comment4.text=\r\n\ Die\ angegebenen\ Millisekunden\ warten\r\n\ \r\n\ Verwenden\ Sie\ diese\ Methode\ z.B.,\ wenn\ sich\ der\ Roboter\ zu\ schnell\ bewegt.\r\n
+numComments=5

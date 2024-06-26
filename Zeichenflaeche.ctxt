@@ -1,0 +1,11 @@
+#BlueJ class context
+comment0.target=Zeichenflaeche
+comment0.text=\r\n\ In\ der\ Klasse\ Zeichenflaeche\ werden\ die\ Objekte\ gezeichnet,\ die\ auf\ der\ Leinwand\ zu\ sehen\ sein\ sollen.\r\n\ Zeichenflaeche\ erbt\ von\ der\ Klasse\ JPanel.\r\n
+comment1.params=
+comment1.target=Zeichenflaeche()
+comment2.params=graphic
+comment2.target=void\ paintComponent(java.awt.Graphics)
+comment2.text=\r\n\ Hier\ wird\ ein\ weisser\ Hintergrund\ gezeichnet,\ sowie\ die\ Hindernisse.\r\n\ Die\ Methode\ paintComponent\ der\ Klasse\ JPanel\ mit\ einer\ eigenen\ Methode\ \u00FCberschreiben\r\n
+comment3.params=rechtecke\ punkte
+comment3.target=void\ repaintFiguren(java.util.ArrayList,\ Punkt[])
+numComments=4
