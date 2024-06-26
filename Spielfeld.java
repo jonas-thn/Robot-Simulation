@@ -25,14 +25,19 @@ public class Spielfeld
         
     }
 
-    public static void main(String[] args) //main Methode mit aktueller Aktion
+    /*---------------------------------------------------------------------------------------------------------------------*/
+
+    public static void main(String[] args) //main methode mit aktueller aktion
     {   
         Spielfeld spielfeld = new Spielfeld();
-        // spielfeld.hindernisseZeichnen();
-        // spielfeld.hindernisseUmfahren();
+        spielfeld.hindernisseZeichnen();
+        spielfeld.hindernisseUmfahren();
 
-        spielfeld.kreiseZeichnen();
+        // spielfeld.kreiseZeichnen();
     }
+
+    /*---------------------------------------------------------------------------------------------------------------------*/
+    
     
     public void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
