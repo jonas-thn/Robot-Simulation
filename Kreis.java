@@ -1,6 +1,6 @@
 import java.awt.Color;
-import java.util.*;
 
+//kreis erbt von figur
 public class Kreis extends Figur
 {
     protected int radius;
@@ -9,7 +9,7 @@ public class Kreis extends Figur
     
     public Kreis(Punkt position, int radius, String bezeichnung, Color farbe) 
     {
-        super(position, bezeichnung, farbe);
+        super(position, bezeichnung, farbe); //figur base konstruktor aufrufen
         this.radius = radius;
     } 
     
@@ -24,7 +24,7 @@ public class Kreis extends Figur
         this.radius = radius;
     }
     
-    
+    //getter, setter, usw...
     public int getRadius() 
     {
         return radius;

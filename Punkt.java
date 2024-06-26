@@ -1,20 +1,9 @@
 
-/**
- * Beschreiben Sie hier die Klasse Punkt.
- * 
- * @author (Ihr Name) 
- * @version (eine Versionsnummer oder ein Datum)
- */
-
-import java.lang.Math;
-
+//representiert einen punkt auf dem spielfeld
 public class Punkt
 {
-    public int x,y;
+    public int x,y; //koordinaten
     
-    /**
-     * Konstruktor für Objekte der Klasse Punkt
-     */
     public Punkt() {}
     public Punkt(int x, int y)
     {
@@ -48,13 +37,13 @@ public class Punkt
         System.out.println ("Hallo Welt");
     }
     
-    public void bewegeUm(int dx, int dy)
+    public void bewegeUm(int dx, int dy) //bewege punkt um x/y verschiebung
     {
         x += dx;
         y += dy;
     }
     
-    public double gibAbstand(Punkt andererPunkt)
+    public double gibAbstand(Punkt andererPunkt) //gibt abstand zwischen diesem punkt und anderem punkt 
     {
         int dx = andererPunkt.x - this.x;
         int dy = andererPunkt.y - this.y;

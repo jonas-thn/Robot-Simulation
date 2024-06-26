@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.util.*;
 
+//rechteck erbt von figur
 public class Rechteck extends Figur
 {
     private int breite;
@@ -10,15 +11,15 @@ public class Rechteck extends Figur
     
     public Rechteck(Punkt position, int breite, int laenge, String bezeichnung, Color farbe) 
     {
-        super(position, bezeichnung, farbe);
+        super(position, bezeichnung, farbe); //base constructor aufrufen
         this.breite = breite;
         this.laenge = laenge;
     } 
     
-    public boolean ueberlappt(Rechteck testRechteck)
+    public boolean ueberlappt(Rechteck testRechteck) //prüfen ob dieses rechteck mit einem anderen rechteck überlappt mit hilfe von sets/mengen und deren schnittmenge
     {
-        HashSet<Integer> basisRechteckX = new HashSet<Integer>();
-        HashSet<Integer> basisRechteckY = new HashSet<Integer>();
+        HashSet<Integer> basisRechteckX = new HashSet<Integer>(); //dieses rechteck in x und y pixel aufgeteilt
+        HashSet<Integer> basisRechteckY = new HashSet<Integer>(); //2D daten-strucktur in x und y aufteilen um verwirrung zu vermeiden
         
         for(int x = position.getX(); x <= (position.getX() + breite); x++)
         {
@@ -30,8 +31,8 @@ public class Rechteck extends Figur
             basisRechteckY.add(y);
         }
         
-        HashSet<Integer> testRechteckX = new HashSet<Integer>();
-        HashSet<Integer> testRechteckY = new HashSet<Integer>();
+        HashSet<Integer> testRechteckX = new HashSet<Integer>(); //fremdes Rechteck in x und y pixel aufgeteilt
+        HashSet<Integer> testRechteckY = new HashSet<Integer>(); //2D daten-strucktur in X und Y aufteilen um verwirrung zu vermeiden
         
         for(int x = testRechteck.getPosition().getX(); x <= (testRechteck.getPosition().getX() + testRechteck.getBreite()); x++)
         {
@@ -43,24 +44,26 @@ public class Rechteck extends Figur
             testRechteckY.add(y);
         }
         
-        basisRechteckX.retainAll(testRechteckX);
-        basisRechteckY.retainAll(testRechteckY);
+        basisRechteckX.retainAll(testRechteckX); //schnittmenge zwischen basis X und test X bilden und in basisX speichern
+        basisRechteckY.retainAll(testRechteckY); //schnittmenge zwischen basis x und test x bilden und in basisX speichern
         
         if(basisRechteckX.size() > 0 && basisRechteckY.size() > 0)
         {
-            return true;
+            return true; //wenn beide schnittmengen leer sind, dann keine überlappung
         }
 
-        return false;
+        return false; //sonst überlappung
         
     } 
-    
+
     public void ausgabeAttribute()
     {
         System.out.println(position + "\n" + laenge + "\n" + breite + "\n" + bezeichnung + "\n" + farbe);
 
     }
     
+    //getter, setter, usw...
+
     public void setBreite(int breite) 
     {
         this.breite = breite;

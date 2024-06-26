@@ -6,13 +6,9 @@ import javax.swing.JFrame;
  * Leinwand zum Zeichnen von Figuren auf einer Zeichenflaeche.
  */
 
-
-
-
-
 public class Leinwand {
     
-    static Leinwand instanz = new Leinwand(1000, 1000);
+    static Leinwand instanz = new Leinwand(1000, 1000); //singleton pattern (1x instanz im gesamten projekt)
     
     static Leinwand getInstanz()
     {

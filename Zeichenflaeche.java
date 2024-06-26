@@ -8,14 +8,14 @@ import javax.swing.JPanel;
  */
 public class Zeichenflaeche extends JPanel
 {
-    private Roboter roboter;
+    private Roboter roboter; //roboter singleton instanz
     private ArrayList<Rechteck> hindernisse; //zu zeichnende Hindernisse
-    private ArrayList<Punkt> punkte;
+    private ArrayList<Punkt> punkte; //zu zeichnende punkte
     
     public Zeichenflaeche() {}
  
     /**
-     * Hier wird ein weisser Hintergrund gezeichnet, sowie die Hindernisse.
+     * Hier wird ein weisser Hintergrund gezeichnet, sowie die Hindernisse, Punkte und der Roboter.
      * Die Methode paintComponent der Klasse JPanel mit einer eigenen Methode überschreiben
      */
     @Override
@@ -29,14 +29,17 @@ public class Zeichenflaeche extends JPanel
         graphic.fillRect(0, 0, size.width, size.height);
         
         
-        //alle Rechtecke zeichnen
+        //alle Rechtecke zeichnen (wenn nicht null)
+        if(hindernisse != null)
+        {
+            for(Rechteck rechteck : hindernisse) {
+                graphic.setColor(rechteck.getFarbe()); 
+                graphic.drawRect(rechteck.getPosition().getX(), rechteck.getPosition().getY(), rechteck.getBreite(), rechteck.getLaenge());
+                graphic.fillRect(rechteck.getPosition().getX(), rechteck.getPosition().getY(), rechteck.getBreite(), rechteck.getLaenge());  
+            }
+        }
         
-        // for(Rechteck rechteck : hindernisse) {
-        //     graphic.setColor(rechteck.getFarbe()); 
-        //     graphic.drawRect(rechteck.getPosition().getX(), rechteck.getPosition().getY(), rechteck.getBreite(), rechteck.getLaenge());
-        //     graphic.fillRect(rechteck.getPosition().getX(), rechteck.getPosition().getY(), rechteck.getBreite(), rechteck.getLaenge());  
-        // }
-        
+        //alle punkte zeichnen (wenn nicht null)
         if(punkte != null)
         {
             for(Punkt punkt : punkte) {
@@ -54,11 +57,11 @@ public class Zeichenflaeche extends JPanel
         graphic.fillOval(roboter.minX(), roboter.minY(), roboter.getRadius()*2, roboter.getRadius()*2);
     }
     
+    //wird genutzt um jeden frame neu zu zeichnen
     public void repaintFiguren(ArrayList<Rechteck> rechtecke, ArrayList<Punkt> punkte) {
         hindernisse = rechtecke;
         this.punkte = punkte;
         repaint();
     }
-    
     
 }

@@ -13,18 +13,19 @@ public class Spielfeld
     private final int laenge=1000;
     private final int breite=1000;
     
-    private ArrayList<Punkt> punkteListe = new ArrayList<Punkt>();
+    private ArrayList<Punkt> punkteListe = new ArrayList<Punkt>(); //punkte Liste
+    private ArrayList<Rechteck> hindernisse; //hindernisse Liste
     
-    private Roboter bot = Roboter.getInstanz();
-    Leinwand leinwand = Leinwand.getInstanz();
+    private Roboter bot = Roboter.getInstanz(); //roboter singleton instanz
+    Leinwand leinwand = Leinwand.getInstanz(); //leinwand singleton instanz
     
-    private ArrayList<Rechteck> hindernisse;
     
-    public Spielfeld(){
+    public Spielfeld()
+    {
         
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) //main Methode mit aktueller Aktion
     {   
         Spielfeld spielfeld = new Spielfeld();
         // spielfeld.hindernisseZeichnen();
@@ -33,7 +34,7 @@ public class Spielfeld
         spielfeld.kreiseZeichnen();
     }
     
-    public void hindernisseUmfahren()
+    public void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
         boolean rechts = true;
         boolean unten = false;
@@ -41,30 +42,30 @@ public class Spielfeld
         
         while(!ende)
         {   
-            bot.bewegeRechts();
+            bot.bewegeRechts(); //fahre einen pixel nach rechts
             rechts = true;
-            if(bot.roboterUeberlappt(hindernisse)) {
-                bot.bewegeLinks();
+            if(bot.roboterUeberlappt(hindernisse)) { //teste ob überlappt
+                bot.bewegeLinks(); //wenn ja, dann wieder zurück
                 rechts = false;
             }
             
-            bot.bewegeUnten();
+            bot.bewegeUnten(); //fahre einen pixel nach unten
             unten = true;
-            if(bot.roboterUeberlappt(hindernisse)) {
-                bot.bewegeOben();
+            if(bot.roboterUeberlappt(hindernisse)) { //teste ob überlappt
+                bot.bewegeOben(); //wenn ja, wieder zurück
                 unten = false;
             } 
         
             if(!rechts && !unten){
-                ende = true;
+                ende = true; //wenn unten und rechts überlappt, dann ende
             }
             
             if(bot.maxX() == 1000 || bot.maxY() == 1000) {
-                ende = true;
+                ende = true; //wenn rand des spielfeldes erreicht dann ende
             }
             
-            leinwand.zeichenflaeche.repaint();
-            Helfer.warten(5);
+            leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+            Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame 
         }
     }
     
@@ -102,14 +103,14 @@ public class Spielfeld
         }
         catch(InputMismatchException e)
         {
-            System.out.println("input mismatch exception - " + e);
+            System.out.println("input mismatch exception - " + e); //falls input kein int -> error
         }
         finally
         {
-            scanner.close();
+            scanner.close(); //immer scanner schließen
         }
         
-        return punkte;
+        return punkte; //eingebene punkte liste zurückgeben
     }
     
     /**
@@ -159,22 +160,23 @@ public class Spielfeld
         }
     }
     
-    public ArrayList<Rechteck> hindernisListeErzeugen()
+    public ArrayList<Rechteck> hindernisListeErzeugen() 
     {
-        ArrayList<Rechteck> rechteckListe = new ArrayList<Rechteck>();
-        Scanner scanner = new Scanner(System.in);
+        ArrayList<Rechteck> rechteckListe = new ArrayList<Rechteck>(); //leere Liste von Rechtecken
+        Scanner scanner = new Scanner(System.in); //scanner init
         System.out.println("Anzahl der Rechtecke?: ");
-        int anzahl = scanner.nextInt();
-        int überlappCounter = 0;
-        Rechteck kandidat;
+        int anzahl = scanner.nextInt(); //anzahl der hindenrisse 
+        int überlappCounter = 0; //mitzählen, wie oft es zu überlappungen kommt
+        Rechteck kandidat; //representiert potenzielles rechteck für jeden durchlauf der loop
                 
         for(int i = 0; i < anzahl; i++)
         {
+            //rechteck mit zufälliger position und farbe erstellen
             kandidat = new Rechteck(Helfer.zufallsPunkt(), Helfer.zufallszahl(20,100),Helfer.zufallszahl(20,100), "Rechteck " + i, Helfer.zufallsfarbe());
         
             boolean überlapp = false;
             
-            for(Rechteck r : rechteckListe)
+            for(Rechteck r : rechteckListe) //überlappung mit allen bisherigen rechtecken der rechteck-liste testen
             {
                 if(kandidat.ueberlappt(r)) 
                 {
@@ -184,42 +186,40 @@ public class Spielfeld
                 
             }
             
-            if(!überlapp)
+            if(!überlapp) //wenn keine überlappung, dann kandidat zur rechteck liste hinzufügen
             {
                 rechteckListe.add(kandidat);
             }
-            else
+            else //wenn überlappung, dann counter inkrementieren & rechteck nicht hinzufügen
             {
-    
                 überlappCounter++;
-                //i--;
             }
             
-            if(überlappCounter >= 50) 
+            if(überlappCounter >= 50) //wenn mehr als 50 überlappungen bevor loop zuende, dann abbruch
             {
                 break;
             }
             überlappCounter = 0;
         }
         
-        return rechteckListe;
+        return rechteckListe; //liste mit rechtecken zurückgeben
     }
     
-    public void hindernisseZeichnen() 
+    public void hindernisseZeichnen() //zeichne hindenrisse & keine kreise
     {
         hindernisse = hindernisListeErzeugen();
         
         zeichnen(hindernisse, punkteListe);
     }
     
-    public void kreiseZeichnen()
+    public void kreiseZeichnen() //zeichne kreise & keine hindernisse
     {
         ArrayList<Punkt> punkte = punkteEingeben();
         
         zeichnen(hindernisse, punkte);
     }
     
-    public void zeichnen(ArrayList<Rechteck> hindernisse, ArrayList<Punkt> punkte)
+    public void zeichnen(ArrayList<Rechteck> hindernisse, ArrayList<Punkt> punkte) //zeichne hindernisse oder rechtecke in leinwand
     {
         leinwand.zeichnen(hindernisse, punkte);
     }

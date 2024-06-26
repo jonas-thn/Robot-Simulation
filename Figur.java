@@ -1,15 +1,14 @@
 import java.awt.Color;
-import java.util.*;
 
-public abstract class Figur
+public abstract class Figur //figur base classe
 {
-    protected Punkt position;
+    protected Punkt position; //gemeinsame attribute
     protected String bezeichnung;
     protected Color farbe;
     
     public Figur() {}
     
-    public Figur(Punkt position, String bezeichnung, Color farbe)
+    public Figur(Punkt position, String bezeichnung, Color farbe) //base constructor
     {
         this.position = position;
         this.bezeichnung = bezeichnung;
@@ -20,38 +19,39 @@ public abstract class Figur
         } 
     }
     
-    public void bewegeUm(int dx, int dy)
+    public void bewegeUm(int dx, int dy) //bewege um x/y verschiebung
     {
         position.setX(position.getX() + dx);
         position.setY(position.getY() + dy);
     }
     
-    public void bewegeRechts()
+    public void bewegeRechts() //bewege rechts wrapper
     {
         bewegeUm(1, 0);
     }
     
-    public void bewegeLinks()
+    public void bewegeLinks() //bewege links wrapper
     {
         bewegeUm(-1, 0);
     }
     
-    public void bewegeOben()
+    public void bewegeOben() //bewege oben wrapper
     {
         bewegeUm(0, -1);
     }
     
-    public void bewegeUnten()
+    public void bewegeUnten() //bewege unten wrapper
     {
         bewegeUm(0, 1);
     }
     
-    public void bewegeUm(Punkt verschiebeVektor)
+    public void bewegeUm(Punkt verschiebeVektor) //bewege um Punkt mit x/y Verschiebung
     {
         position.setX(position.getX() + verschiebeVektor.getX());
         position.setY(position.getY() + verschiebeVektor.getY());
     }
     
+    //getters & setters
     public void setPosition(Punkt position) 
     {
         this.position = position;
@@ -82,6 +82,7 @@ public abstract class Figur
         return farbe;
     }
     
+    //abstakte methoden
     abstract int minX();
     abstract int minY();
     abstract int maxX();
