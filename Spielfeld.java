@@ -37,7 +37,24 @@ public class Spielfeld
 
     /*---------------------------------------------------------------------------------------------------------------------*/
     
-    
+    /* Hindernisse Umfahren:
+     * 
+     * -unser roboter hat die option zwischen 4 verschiedenen bewegungsmustern und einem rückwärts-failsafe gang zu unterschieden
+     * 
+     * -diese methode / der alogorithmus ist aus eigener interesse als experiment entstanden 
+     *  und gehört (in diesem umfang) nicht zu den offiziellen aufgaben des projekts
+     * 
+     * -uns ist bewusst, dass der code dieser methode nicht besonders gut aufgebaut ist
+     * --> es gibt viele wiederhohlugen, die in seperate methoden ausgelagert werden sollten
+     * --> die boolean flags könnte man mit hilfe eines enums gruppieren
+     * --> usw...
+     * 
+     * -wir haben uns primär aus zeigründen dazu entschieden die methode so zu lassen
+     * -so müssen wir keine weitere variablen global definieren oder neue methoden erstellen
+     * -unser informatik-projekt bleibt dadurch getrennt von diesem (aus eigener initiative entstanden) algorithmus
+     * 
+     * -wenn dieser text nach der abgabe des projektes noch da steht, dann haben wir keine zeit mehr gefunden, die methode aufzuräumen
+     */
     public void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
         boolean normal = true; //unterscheidet zwischen vier verschiedenen bewegungsmustern
@@ -51,23 +68,20 @@ public class Spielfeld
         boolean ende = false; //roboter ist komplett am ende
 
         int failsafeCounter = 0;
-        int maxFailsafe = 2;
+        int maxFailsafe = 12; //bestimmen, wie oft der failsafe modus maximal ausgeführt wird (12 empfohlen)
         boolean failsafeModus = false; //rückwärts gang
-
-        int notfallCounter = 0;
-        int maxNotfälle = 2;
-        boolean NOTFALL_MODUS = false; //wenn wirklich alles nicht funktioniert, dann wird NOTFALL MODUS aktiviert
-        boolean rückwärtsCollision = false; //testes rückwärts-collision im NOTFALL MODUS
+        boolean rückwärtsCollision = false; //testet rückwärts-collision im failsafe-modus
         
         while(!ende)
         {   
+            //BREAK CONDITION
             if(failsafeCounter >= maxFailsafe)
             {
-                NOTFALL_MODUS = true;
-                failsafeCounter = 0;
+                ende = true;
             }
 
-            if(NOTFALL_MODUS) //wenn failsafeModus nicht funktioniert, dann notfall modus 
+            //FAILSAFE MODUS - SEKUNDÄERE BEWEGUNG
+            if(failsafeModus) //rückwärs gang, wenn vorwärts nicht geht
             {
                 if(!rückwärtsCollision)
                 {
@@ -89,66 +103,87 @@ public class Spielfeld
                 }
                 else if(rückwärtsCollision)
                 {
-                    if(!links)
+                    if((!links || !oben) && (failsafeCounter % 4) == 0)
                     {
+                        System.err.println("0");
+
                         bot.bewegeRechts(); //fahre einen pixel nach rechts
                         rechts = true;
                         if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
                             bot.bewegeLinks(); //wenn ja, dann wieder zurück
                             rechts = false;
 
-                            NOTFALL_MODUS = false;
+                            failsafeModus = false;
                             failsafeModus = false;
                             normal = true;
                             extra = false;
 
                             rückwärtsCollision = false;
-                            notfallCounter++;
+                            failsafeCounter++;
+                        }
+                    }
+                    else if((!links || !oben) && (failsafeCounter % 4) == 1)
+                    {
+                        System.err.println("1");
+
+                        bot.bewegeOben(); //fahre einen pixel nach oben
+                        oben = true;
+                        if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
+                            bot.bewegeUnten(); //wenn ja, wieder zurück
+                            oben = false;
+
+                            failsafeModus = false;
+                            failsafeModus = false;
+                            normal = true;
+                            extra = false;
+
+                            rückwärtsCollision = false;
+                            failsafeCounter++;
+                        }
+                    }
+                    else if((!links || !oben) && (failsafeCounter % 4) == 2)
+                    {
+                        System.err.println("2");
+
+                        bot.bewegeUnten(); //fahre einen pixel nach unten
+                        unten = true;
+                        if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+                            bot.bewegeOben(); //wenn ja, wieder zurück
+                            unten = false;
+
+                            failsafeModus = false;
+                            failsafeModus = false;
+                            normal = true;
+                            extra = false;
+
+                            rückwärtsCollision = false;
+                            failsafeCounter++;
+                        }
+                    }
+                    else if((!links || !oben) && (failsafeCounter % 4) == 3)
+                    {
+                        System.err.println("3");
+
+                        bot.bewegeLinks(); //fahre einen pixel nach links
+                        links = true;
+                        if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
+                            bot.bewegeRechts(); //wenn ja, dann wieder zurück
+                            links = false;
+
+                            failsafeModus = false;
+                            failsafeModus = false;
+                            normal = true;
+                            extra = false;
+
+                            rückwärtsCollision = false;
+                            failsafeCounter++;
                         }
                     }
                 }
-                else if (!oben) 
-                {
-                    bot.bewegeUnten(); //fahre einen pixel nach unten
-                    unten = true;
-                    if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) 
-                    { //teste ob überlappt oder am unteren rand
-                        bot.bewegeOben(); //wenn ja, wieder zurück
-                        unten = false;
-
-                        NOTFALL_MODUS = false;
-                            failsafeModus = false;
-                        normal = true;
-                        extra = false;
-
-                        rückwärtsCollision = false;
-                        notfallCounter++;
-                    }
-                }    
+                  
             }
-            else if(failsafeModus) //wenn vorwärts nicht geht, dann rückwärts probieren
-            {
-                bot.bewegeLinks(); //fahre einen pixel nach links
-                links = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
-                    bot.bewegeRechts(); //wenn ja, dann wieder zurück
-                    links = false;
-                }
 
-                bot.bewegeOben(); //fahre einen pixel nach oben
-                oben = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
-                    bot.bewegeUnten(); //wenn ja, wieder zurück
-                    oben = false;
-                } 
-
-                if(!oben && !links)
-                {
-                    normal = true;
-                    extra = false;
-                    failsafeModus = false;
-                }
-            }
+            //PRIMÄRERE BEWEGUNG
             else if(normal && !extra)
             {
                 bot.bewegeRechts(); //fahre einen pixel nach rechts
@@ -167,6 +202,11 @@ public class Spielfeld
             
                 if(!rechts && !unten){
                     normal = false; //wenn unten und rechts überlappt, dann wechsel gang
+
+                    if((failsafeCounter >= 5) && (failsafeCounter <= 8))
+                    {
+                        failsafeModus = true;
+                    }
                 }
 
                 if(bot.maxX() >= 999 && bot.maxY() >= 999) {
@@ -195,6 +235,11 @@ public class Spielfeld
 
                 if(!links && !unten){
                     extra = true; //wenn unten und links überlappt, dann wechsel gang zu extra
+
+                    if((failsafeCounter >= 9) && (failsafeCounter <= 12))
+                    {
+                        failsafeModus = true;
+                    }
                 }
             }
             else if(extra && !normal)
@@ -237,8 +282,7 @@ public class Spielfeld
                 } 
 
                 if(!rechts && !unten){
-                    failsafeCounter++; //wenn unten und rechts überlappt, dann erhöhe den failsafe counter
-                    failsafeModus = true;
+                    failsafeModus = true; //failsafe modus aktivieren
 
                     normal = false;
                     extra = false;
@@ -251,13 +295,7 @@ public class Spielfeld
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
 
-            Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame 
-            
-            if(notfallCounter >= maxNotfälle)
-            {
-                ende = true;
-            }
-            
+            Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
         }
     }
     
