@@ -378,7 +378,12 @@ public class Spielfeld
                 
             }
             
-            if(!überlapp) //wenn keine überlappung, dann kandidat zur rechteck liste hinzufügen
+            int freiRaum = 100;
+            //start und ende bleibt im 50x50 bereich frei
+            boolean imStart = (kandidat.getPosition().getX() < freiRaum) && (kandidat.getPosition().getY() < freiRaum);
+            boolean imEnde = (kandidat.maxX() > (1000 - freiRaum)) && (kandidat.maxY() > (1000 - freiRaum));
+
+            if(!überlapp && !(imStart || imEnde)) //wenn keine überlappung, dann kandidat zur rechteck liste hinzufügen
             {
                 rechteckListe.add(kandidat);
             }
