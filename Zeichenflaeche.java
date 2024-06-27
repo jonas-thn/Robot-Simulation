@@ -56,25 +56,25 @@ public class Zeichenflaeche extends JPanel
         graphic.drawOval(roboter.minX(), roboter.minY(), roboter.getRadius()*2, roboter.getRadius()*2);
         graphic.fillOval(roboter.minX(), roboter.minY(), roboter.getRadius()*2, roboter.getRadius()*2);
 
-        //linkes auge
-        graphic.setColor(Color.white);
-        graphic.drawOval(roboter.minX() + 3, roboter.minY() + 5, roboter.getRadius() - 3, roboter.getRadius() - 3);
-        graphic.fillOval(roboter.minX() + 3, roboter.minY() + 5, roboter.getRadius() - 3, roboter.getRadius() - 3);
+        // //linkes auge
+        // graphic.setColor(Color.white);
+        // graphic.drawOval(roboter.minX() + 5, roboter.minY() + 7, roboter.getRadius() - 5, roboter.getRadius() - 5);
+        // graphic.fillOval(roboter.minX() + 5, roboter.minY() + 7, roboter.getRadius() - 5, roboter.getRadius() - 5);
 
-        //linke pupille
-        graphic.setColor(Color.black);
-        graphic.drawOval(roboter.minX() + 6, roboter.minY() + 9, roboter.getRadius() - 8, roboter.getRadius() - 8);
-        graphic.fillOval(roboter.minX() + 6, roboter.minY() + 9, roboter.getRadius() - 8, roboter.getRadius() - 8);
+        // //linke pupille
+        // graphic.setColor(Color.black);
+        // graphic.drawOval(roboter.minX() + 7, roboter.minY() + 10, roboter.getRadius() - 10, roboter.getRadius() - 10);
+        // graphic.fillOval(roboter.minX() + 7, roboter.minY() + 10, roboter.getRadius() - 10, roboter.getRadius() - 10);
 
-        //rechtes auge
-        graphic.setColor(Color.white);
-        graphic.drawOval(roboter.minX() + 20, roboter.minY() + 8, roboter.getRadius() - 3, roboter.getRadius() - 3);
-        graphic.fillOval(roboter.minX() + 20, roboter.minY() + 8, roboter.getRadius() - 3, roboter.getRadius() - 3);
+        // //rechtes auge
+        // graphic.setColor(Color.white);
+        // graphic.drawOval(roboter.maxX() - 19, roboter.minY() + 7, roboter.getRadius() - 5, roboter.getRadius() - 5);
+        // graphic.fillOval(roboter.maxX() - 19, roboter.minY() + 7, roboter.getRadius() - 5, roboter.getRadius() - 5);
 
-        //rechte pupille
-        graphic.setColor(Color.black);
-        graphic.drawOval(roboter.minX() + 23, roboter.minY() + 11, roboter.getRadius() - 8, roboter.getRadius() - 8);
-        graphic.fillOval(roboter.minX() + 23, roboter.minY() + 11, roboter.getRadius() - 8, roboter.getRadius() - 8);
+        // //rechte pupille
+        // graphic.setColor(Color.black);
+        // graphic.drawOval(roboter.maxX() - 15, roboter.minY() + 10, roboter.getRadius() - 10, roboter.getRadius() - 10);
+        // graphic.fillOval(roboter.maxX() - 15, roboter.minY() + 10, roboter.getRadius() - 10, roboter.getRadius() - 10);
 
     }
     

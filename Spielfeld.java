@@ -42,33 +42,126 @@ public class Spielfeld
     
     public void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
-        boolean rechts = true;
-        boolean unten = false;
-        boolean ende = false;
+        boolean normal = true; //unterscheidet zwischen vier verschiedenen bewegungsmustern
+        boolean extra = false; //boolean kombination aus extra und nornal representiert gänge
+
+        boolean rechts; //testet ob rechts frei ist
+        boolean unten; //testet ob links frei wird
+        boolean links; //testet ob rechts frei ist
+        boolean oben; //testet ob links frei ist
+
+        boolean ende = false; //roboter ist komplett am ende
+
+        int failsafeCounter = 0;
+        int maxFailsafe = 3;
         
         while(!ende)
         {   
-            bot.bewegeRechts(); //fahre einen pixel nach rechts
-            rechts = true;
-            if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
-                bot.bewegeLinks(); //wenn ja, dann wieder zurück
-                rechts = false;
-            }
-            
-            bot.bewegeUnten(); //fahre einen pixel nach unten
-            unten = true;
-            if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
-                bot.bewegeOben(); //wenn ja, wieder zurück
-                unten = false;
-            } 
-        
-            if(!rechts && !unten){
-                ende = true; //wenn unten und rechts überlappt, dann ende
+
+            if(failsafeCounter >= maxFailsafe)
+            {
+                ende = true;
             }
 
-            if(bot.maxX() == 1000 && bot.maxY() == 1000) {
-                ende = true; //wenn rand des spielfeldes erreicht dann ende
+            if(normal && !extra)
+            {
+                bot.bewegeRechts(); //fahre einen pixel nach rechts
+                rechts = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
+                    rechts = false;
+                }
+                
+                bot.bewegeUnten(); //fahre einen pixel nach unten
+                unten = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+                    bot.bewegeOben(); //wenn ja, wieder zurück
+                    unten = false;
+                } 
+            
+                if(!rechts && !unten){
+                    normal = false; //wenn unten und rechts überlappt, dann wechsel gang
+                }
+
+                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
+                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
+                }
             }
+            else if(!normal && !extra)
+            {
+                bot.bewegeLinks(); //fahre einen pixel nach links
+                links = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
+                    bot.bewegeRechts(); //wenn ja, dann wieder zurück
+                    links = false;
+                }
+
+                bot.bewegeUnten(); //fahre einen pixel nach unten
+                unten = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+                    bot.bewegeOben(); //wenn ja, wieder zurück
+                    unten = false;
+                } 
+                else
+                {
+                    normal = true;
+                }
+
+                if(!links && !unten){
+                    extra = true; //wenn unten und links überlappt, dann wechsel gang zu extra
+                }
+            }
+            else if(extra && !normal)
+            {
+                bot.bewegeRechts(); //fahre einen pixel nach rechts
+                rechts = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
+                    rechts = false;
+                }
+                
+                bot.bewegeOben(); //fahre einen pixel nach oben
+                oben = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
+                    bot.bewegeUnten(); //wenn ja, wieder zurück
+                    oben = false;
+
+                    extra = true;
+                    normal = true;
+                } 
+
+                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
+                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
+                }
+            }
+            else if(extra && normal)
+            {
+                bot.bewegeRechts(); //fahre einen pixel nach rechts
+                rechts = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
+                    rechts = false;
+                }
+                
+                bot.bewegeUnten(); //fahre einen pixel nach unten
+                unten = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+                    bot.bewegeOben(); //wenn ja, wieder zurück
+                    unten = false;
+                } 
+
+                if(!rechts && !unten){
+                    failsafeCounter++; //wenn unten und rechts überlappt, dann erhöhe den failsafe counter
+
+                    normal = false;
+                    extra = false;
+                }
+
+                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
+                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
+                }
+            }
+            
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
             Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame 
