@@ -3,7 +3,7 @@ import java.util.*;
 
 public class Roboter extends Kreis
 {        
-    public int verlangsamung = 5; //höhere zahl = langsamere geschwindigkeit
+    public int verlangsamung = 1; //höhere zahl = langsamere geschwindigkeit
     static int roboterRadius = 13; //radius hier ändern
     
     static Roboter instance = new Roboter(new Punkt(0, 0), roboterRadius, "Test", Color.red); //roboter singelton pattern (nur 1x in gesamten projekt)

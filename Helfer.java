@@ -11,9 +11,9 @@ public class Helfer
         return (zufall.nextInt(bis - von + 1) + von);
     }
     
-    public static Color zufallsfarbe() //zufällige farbe mit werten zwischen 128 und 256
+    public static Color zufallsfarbe() //zufällige farbe mit werten zwischen 100 und 200 (ganz dunkle und ganz helle farben vermeiden)
     {
-        return new Color(zufallszahl(128, 255), zufallszahl(128, 255), zufallszahl(128, 255), 255);
+        return new Color(zufallszahl(100, 200), zufallszahl(100, 200), zufallszahl(100, 200), 255);
     }
     
     public static Punkt zufallsPunkt() //zufälliger Punkt im Spielfeld

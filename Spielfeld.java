@@ -1,7 +1,5 @@
-import java.util.*;
 import java.awt.Color;
-import java.io.PushbackInputStream;
-import javax.swing.Box;
+import java.util.*;
 
 /**
  * Beschreiben Sie hier die Klasse Spielfeld.
@@ -45,25 +43,113 @@ public class Spielfeld
         boolean normal = true; //unterscheidet zwischen vier verschiedenen bewegungsmustern
         boolean extra = false; //boolean kombination aus extra und nornal representiert gänge
 
-        boolean rechts; //testet ob rechts frei ist
-        boolean unten; //testet ob links frei wird
-        boolean links; //testet ob rechts frei ist
-        boolean oben; //testet ob links frei ist
+        boolean rechts = true; //testet ob rechts frei ist
+        boolean unten = true; //testet ob links frei wird
+        boolean links = false; //testet ob rechts frei ist
+        boolean oben = false; //testet ob links frei ist
 
         boolean ende = false; //roboter ist komplett am ende
 
         int failsafeCounter = 0;
-        int maxFailsafe = 3;
+        int maxFailsafe = 2;
+        boolean failsafeModus = false; //rückwärts gang
+
+        int notfallCounter = 0;
+        int maxNotfälle = 2;
+        boolean NOTFALL_MODUS = false; //wenn wirklich alles nicht funktioniert, dann wird NOTFALL MODUS aktiviert
+        boolean rückwärtsCollision = false; //testes rückwärts-collision im NOTFALL MODUS
         
         while(!ende)
         {   
-
             if(failsafeCounter >= maxFailsafe)
             {
-                ende = true;
+                NOTFALL_MODUS = true;
+                failsafeCounter = 0;
             }
 
-            if(normal && !extra)
+            if(NOTFALL_MODUS) //wenn failsafeModus nicht funktioniert, dann notfall modus 
+            {
+                if(!rückwärtsCollision)
+                {
+                    bot.bewegeLinks(); //fahre einen pixel nach links
+                    links = true;
+                    if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
+                        bot.bewegeRechts(); //wenn ja, dann wieder zurück
+                        links = false;
+                        rückwärtsCollision = true;
+                    }
+
+                    bot.bewegeOben(); //fahre einen pixel nach oben
+                    oben = true;
+                    if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
+                        bot.bewegeUnten(); //wenn ja, wieder zurück
+                        oben = false;
+                        rückwärtsCollision = true;
+                    } 
+                }
+                else if(rückwärtsCollision)
+                {
+                    if(!links)
+                    {
+                        bot.bewegeRechts(); //fahre einen pixel nach rechts
+                        rechts = true;
+                        if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+                            bot.bewegeLinks(); //wenn ja, dann wieder zurück
+                            rechts = false;
+
+                            NOTFALL_MODUS = false;
+                            failsafeModus = false;
+                            normal = true;
+                            extra = false;
+
+                            rückwärtsCollision = false;
+                            notfallCounter++;
+                        }
+                    }
+                }
+                else if (!oben) 
+                {
+                    bot.bewegeUnten(); //fahre einen pixel nach unten
+                    unten = true;
+                    if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) 
+                    { //teste ob überlappt oder am unteren rand
+                        bot.bewegeOben(); //wenn ja, wieder zurück
+                        unten = false;
+
+                        NOTFALL_MODUS = false;
+                            failsafeModus = false;
+                        normal = true;
+                        extra = false;
+
+                        rückwärtsCollision = false;
+                        notfallCounter++;
+                    }
+                }    
+            }
+            else if(failsafeModus) //wenn vorwärts nicht geht, dann rückwärts probieren
+            {
+                bot.bewegeLinks(); //fahre einen pixel nach links
+                links = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
+                    bot.bewegeRechts(); //wenn ja, dann wieder zurück
+                    links = false;
+                }
+
+                bot.bewegeOben(); //fahre einen pixel nach oben
+                oben = true;
+                if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
+                    bot.bewegeUnten(); //wenn ja, wieder zurück
+                    oben = false;
+                } 
+
+                if(!oben && !links)
+                {
+                    normal = true;
+                    extra = false;
+                    failsafeModus = false;
+                }
+            }
+            else if(normal && !extra)
             {
                 bot.bewegeRechts(); //fahre einen pixel nach rechts
                 rechts = true;
@@ -152,6 +238,7 @@ public class Spielfeld
 
                 if(!rechts && !unten){
                     failsafeCounter++; //wenn unten und rechts überlappt, dann erhöhe den failsafe counter
+                    failsafeModus = true;
 
                     normal = false;
                     extra = false;
@@ -162,9 +249,15 @@ public class Spielfeld
                 }
             }
             
-            
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
             Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame 
+            
+            if(notfallCounter >= maxNotfälle)
+            {
+                ende = true;
+            }
+            
         }
     }
     
