@@ -13,10 +13,10 @@ public abstract class Figur //figur base classe
         this.position = position;
         this.bezeichnung = bezeichnung;
         this.farbe = farbe;
-        if(farbe == Color.white) 
-        {
-            System.out.println("Error color is white");
-        } 
+        // if(farbe == Color.white) 
+        // {
+        //     System.out.println("Error color is white");
+        // } 
     }
     
     public void bewegeUm(int dx, int dy) //bewege um x/y verschiebung

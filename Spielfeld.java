@@ -1,4 +1,3 @@
-import java.awt.Color;
 import java.util.*;
 
 /**
@@ -29,10 +28,14 @@ public class Spielfeld
     public static void main(String[] args) //main methode mit aktueller aktion
     {   
         Spielfeld spielfeld = new Spielfeld();
-        spielfeld.hindernisseZeichnen();
-        spielfeld.hindernisseUmfahren();
+        Roboter bot = Roboter.getInstanz();
+
+        // spielfeld.hindernisseZeichnen();
+        // spielfeld.hindernisseUmfahren();
 
         // spielfeld.kreiseZeichnen();
+
+        bot.spracherkennung();
     }
 
     /*--------------------------------------------------MAIN--------------------------------------------------------------*/

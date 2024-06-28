@@ -11,18 +11,6 @@ public class Roboter extends Kreis
     //virtueller Roboter als Rechteck darstellen, um überlappung zu testen
     public Rechteck vRoboter = new Rechteck(position, 2*radius, 2*radius, "Roboter", Color.white); 
 
-    //aktuell nicht in verwendung
-    // private enum Stichwort
-    // {
-    //     NAME,
-    //     HERSTELLER,
-    //     ALTER,
-    //     GESCHLECHT
-    // };
-    
-    // private Stichwort stichwort;
-
-
     Scanner scanner = new Scanner(System.in); //input scanner
     
     private Roboter()
@@ -61,12 +49,18 @@ public class Roboter extends Kreis
         
         while(!frage.contains("END"))
         {
+            System.out.println("Stelle mir eine Frage: ");
             frage = scanner.nextLine().toUpperCase();
             
             if(frage.contains("NAME")) { System.out.println("Mein Name ist Müller."); }
             if(frage.contains("HERSTELLER")) { System.out.println("Mein Hersteller ist Thorben Thaun."); }
             if(frage.contains("ALT") || frage.contains("ALTER")) { System.out.println("Sowas fragt man nicht."); }
             if(frage.contains("GESCHLECHT")) { System.out.println("Ich bin binär."); }
+
+            if(!(frage.contains("NAME") || frage.contains("HERSTELLER") || frage.contains("ALT") || frage.contains("ALTER") || frage.contains("GESCHLECHT") || frage.contains("END")))
+            {
+                System.out.println("Die Frage verstehe ich nicht.");
+            }
         }
         
         System.out.println("Tschüss!");    
