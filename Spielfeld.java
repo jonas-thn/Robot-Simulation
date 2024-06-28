@@ -17,14 +17,14 @@ public class Spielfeld
     
     private Roboter bot = Roboter.getInstanz(); //roboter singleton instanz
     Leinwand leinwand = Leinwand.getInstanz(); //leinwand singleton instanz
-    
-    
+
     public Spielfeld()
     {
         
     }
 
-    /*---------------------------------------------------------------------------------------------------------------------*/
+
+    /*--------------------------------------------------MAIN--------------------------------------------------------------*/
 
     public static void main(String[] args) //main methode mit aktueller aktion
     {   
@@ -35,30 +35,28 @@ public class Spielfeld
         // spielfeld.kreiseZeichnen();
     }
 
-    /*---------------------------------------------------------------------------------------------------------------------*/
+    /*--------------------------------------------------MAIN--------------------------------------------------------------*/
+
     
     /* Hindernisse Umfahren:
      * 
      * -unser roboter hat die option zwischen 4 verschiedenen bewegungsmustern und einem rückwärts-failsafe gang zu unterschieden
      * 
      * -diese methode / der alogorithmus ist aus eigener interesse als experiment entstanden 
-     *  und gehört (in diesem umfang) nicht zu den offiziellen aufgaben des projekts
-     * 
-     * -uns ist bewusst, dass der code dieser methode nicht besonders gut aufgebaut ist
-     * --> es gibt viele wiederhohlugen, die in seperate methoden ausgelagert werden sollten
-     * --> die boolean flags könnte man mit hilfe eines enums gruppieren
-     * --> usw...
-     * 
-     * -wir haben uns primär aus zeigründen dazu entschieden die methode so zu lassen
-     * -so müssen wir keine weitere variablen global definieren oder neue methoden erstellen
-     * -unser informatik-projekt bleibt dadurch getrennt von diesem (aus eigener initiative entstanden) algorithmus
-     * 
-     * -wenn dieser text nach der abgabe des projektes noch da steht, dann haben wir keine zeit mehr gefunden, die methode aufzuräumen
-     */
+     *  und gehört (in diesem umfang) nicht zu den offiziellen aufgaben des projekts */
+     
     public void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
-        boolean normal = true; //unterscheidet zwischen vier verschiedenen bewegungsmustern
-        boolean extra = false; //boolean kombination aus extra und nornal representiert gänge
+        enum Bewegungsmuster
+        {
+            rechtsRunter, //bewegungsmuster 1: diagonal noch rechts unten
+            linksGerade, //bewegunsmuster 2: gerade nach links
+            rechtsHoch, //bewegungsmuster 3: diagonal nach rechts oben
+            runterGerade, //bewegungsmuster 4: gerade nach unten
+            failsafeRückwärts //wird im notfall ausgeführt --> rückwärts bis zum ersten zusammenstoß und dann gerade in eine der 4 richtungen (abhängig vom failsafe counter)
+        }
+
+        Bewegungsmuster aktuelleBewegung = Bewegungsmuster.rechtsRunter;
 
         boolean rechts = true; //testet ob rechts frei ist
         boolean unten = true; //testet ob links frei wird
@@ -66,10 +64,8 @@ public class Spielfeld
         boolean oben = false; //testet ob links frei ist
 
         boolean ende = false; //roboter ist komplett am ende
-
         int failsafeCounter = 0;
         int maxFailsafe = 12; //bestimmen, wie oft der failsafe modus maximal ausgeführt wird (12 empfohlen)
-        boolean failsafeModus = false; //rückwärts gang
         boolean rückwärtsCollision = false; //testet rückwärts-collision im failsafe-modus
         
         while(!ende)
@@ -80,223 +76,194 @@ public class Spielfeld
                 ende = true;
             }
 
-            //FAILSAFE MODUS - SEKUNDÄERE BEWEGUNG
-            if(failsafeModus) //rückwärs gang, wenn vorwärts nicht geht
+            switch(aktuelleBewegung) //zwischen verschiedenen bewegungsmustern wählen
             {
-                if(!rückwärtsCollision)
-                {
-                    bot.bewegeLinks(); //fahre einen pixel nach links
-                    links = true;
-                    if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
-                        bot.bewegeRechts(); //wenn ja, dann wieder zurück
-                        links = false;
-                        rückwärtsCollision = true;
-                    }
-
-                    bot.bewegeOben(); //fahre einen pixel nach oben
-                    oben = true;
-                    if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
-                        bot.bewegeUnten(); //wenn ja, wieder zurück
-                        oben = false;
-                        rückwärtsCollision = true;
-                    } 
-                }
-                else if(rückwärtsCollision)
-                {
-                    if((!links || !oben) && (failsafeCounter % 4) == 0)
+                case failsafeRückwärts:
+                    if(!rückwärtsCollision) //teste erste rückwärst collision beim rückwärts gang
                     {
-                        System.err.println("0");
+                        links = tryLinksBewegung();
+                        rückwärtsCollision = !links;
 
-                        bot.bewegeRechts(); //fahre einen pixel nach rechts
-                        rechts = true;
-                        if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
-                            bot.bewegeLinks(); //wenn ja, dann wieder zurück
-                            rechts = false;
+                        oben = tryHochBewegung(); 
+                        rückwärtsCollision = !oben;
+                    }
+                    else if(rückwärtsCollision) //wähle neue richtung nach erster rückwärts collision
+                    {
+                        if((!links || !oben) && (failsafeCounter % 4) == 0) //wähle richtung aus, je nach failsafeCounter
+                        {
+                            System.err.println("0");
 
-                            failsafeModus = false;
-                            failsafeModus = false;
-                            normal = true;
-                            extra = false;
+                            rechts = tryRechtsBewegung();
+                            if(!rechts)
+                            {
+                                rückwärtsCollision = false;
+                                failsafeCounter++;
 
-                            rückwärtsCollision = false;
-                            failsafeCounter++;
+                                aktuelleBewegung = Bewegungsmuster.rechtsRunter; //ändere wider zu gang 1
+                            }
+                        }
+                        else if((!links || !oben) && (failsafeCounter % 4) == 1) //wähle richtung aus, je nach failsafeCounter
+                        {
+                            System.err.println("1");
+
+                            oben = tryHochBewegung();
+                            if(!oben)
+                            {
+                                rückwärtsCollision = false;
+                                failsafeCounter++;
+
+                                aktuelleBewegung = Bewegungsmuster.rechtsRunter; //ändere wider zu gang 1
+                            }
+                        }
+                        else if((!links || !oben) && (failsafeCounter % 4) == 2) //wähle richtung aus, je nach failsafeCounter
+                        {
+                            System.err.println("2");
+
+                            unten = tryRunterBewegung();
+                            if(!unten)
+                            {
+                                aktuelleBewegung = Bewegungsmuster.rechtsRunter; //ändere wieder zu gang 1
+
+                                rückwärtsCollision = false;
+                                failsafeCounter++;
+                            }
+                        }
+                        else if((!links || !oben) && (failsafeCounter % 4) == 3) //wähle richtung aus, je nach failsafeCounter
+                        {
+                            System.err.println("3");
+
+                            links = tryLinksBewegung();
+                            if(!links)
+                            {
+                                rückwärtsCollision = false;
+                                failsafeCounter++;
+
+                                aktuelleBewegung = Bewegungsmuster.rechtsRunter; //ändere wider zu gang 1
+                            }
                         }
                     }
-                    else if((!links || !oben) && (failsafeCounter % 4) == 1)
-                    {
-                        System.err.println("1");
+                    break;
 
-                        bot.bewegeOben(); //fahre einen pixel nach oben
-                        oben = true;
-                        if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
-                            bot.bewegeUnten(); //wenn ja, wieder zurück
-                            oben = false;
+                case rechtsRunter:
+                    rechts = tryRechtsBewegung();
 
-                            failsafeModus = false;
-                            failsafeModus = false;
-                            normal = true;
-                            extra = false;
-
-                            rückwärtsCollision = false;
-                            failsafeCounter++;
-                        }
-                    }
-                    else if((!links || !oben) && (failsafeCounter % 4) == 2)
-                    {
-                        System.err.println("2");
-
-                        bot.bewegeUnten(); //fahre einen pixel nach unten
-                        unten = true;
-                        if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
-                            bot.bewegeOben(); //wenn ja, wieder zurück
-                            unten = false;
-
-                            failsafeModus = false;
-                            failsafeModus = false;
-                            normal = true;
-                            extra = false;
-
-                            rückwärtsCollision = false;
-                            failsafeCounter++;
-                        }
-                    }
-                    else if((!links || !oben) && (failsafeCounter % 4) == 3)
-                    {
-                        System.err.println("3");
-
-                        bot.bewegeLinks(); //fahre einen pixel nach links
-                        links = true;
-                        if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
-                            bot.bewegeRechts(); //wenn ja, dann wieder zurück
-                            links = false;
-
-                            failsafeModus = false;
-                            failsafeModus = false;
-                            normal = true;
-                            extra = false;
-
-                            rückwärtsCollision = false;
-                            failsafeCounter++;
-                        }
-                    }
-                }
-                  
-            }
-
-            //PRIMÄRERE BEWEGUNG
-            else if(normal && !extra)
-            {
-                bot.bewegeRechts(); //fahre einen pixel nach rechts
-                rechts = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
-                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
-                    rechts = false;
-                }
+                    unten = tryRunterBewegung();
                 
-                bot.bewegeUnten(); //fahre einen pixel nach unten
-                unten = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
-                    bot.bewegeOben(); //wenn ja, wieder zurück
-                    unten = false;
-                } 
-            
-                if(!rechts && !unten){
-                    normal = false; //wenn unten und rechts überlappt, dann wechsel gang
-
-                    if((failsafeCounter >= 5) && (failsafeCounter <= 8))
-                    {
-                        failsafeModus = true;
+                    if(!rechts && !unten){
+                        aktuelleBewegung = Bewegungsmuster.linksGerade; //wenn unten und rechts überlappt, dann wechsel gang
                     }
-                }
 
-                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
-                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
-                }
-            }
-            else if(!normal && !extra)
-            {
-                bot.bewegeLinks(); //fahre einen pixel nach links
-                links = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
-                    bot.bewegeRechts(); //wenn ja, dann wieder zurück
-                    links = false;
-                }
+                    ende = testeObImZiel();
+                    break;
 
-                bot.bewegeUnten(); //fahre einen pixel nach unten
-                unten = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
-                    bot.bewegeOben(); //wenn ja, wieder zurück
-                    unten = false;
-                } 
-                else
-                {
-                    normal = true;
-                }
+                case linksGerade:
+                    links = tryLinksBewegung();
 
-                if(!links && !unten){
-                    extra = true; //wenn unten und links überlappt, dann wechsel gang zu extra
-
-                    if((failsafeCounter >= 9) && (failsafeCounter <= 12))
+                    unten = tryRunterBewegung();
+                    if(unten)
                     {
-                        failsafeModus = true;
+                        aktuelleBewegung = Bewegungsmuster.rechtsRunter; //zurück zu gang 1 (diagonal)
                     }
-                }
-            }
-            else if(extra && !normal)
-            {
-                bot.bewegeRechts(); //fahre einen pixel nach rechts
-                rechts = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
-                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
-                    rechts = false;
-                }
-                
-                bot.bewegeOben(); //fahre einen pixel nach oben
-                oben = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
-                    bot.bewegeUnten(); //wenn ja, wieder zurück
-                    oben = false;
 
-                    extra = true;
-                    normal = true;
-                } 
+                    if(!links && !unten){
+                        aktuelleBewegung = Bewegungsmuster.rechtsHoch; //wenn unten und links überlappt, dann wechsel gang
 
-                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
-                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
-                }
-            }
-            else if(extra && normal)
-            {
-                bot.bewegeRechts(); //fahre einen pixel nach rechts
-                rechts = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
-                    bot.bewegeLinks(); //wenn ja, dann wieder zurück
-                    rechts = false;
-                }
-                
-                bot.bewegeUnten(); //fahre einen pixel nach unten
-                unten = true;
-                if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
-                    bot.bewegeOben(); //wenn ja, wieder zurück
-                    unten = false;
-                } 
+                        if((failsafeCounter >= 5) && (failsafeCounter <= 8))
+                        {
+                            aktuelleBewegung = Bewegungsmuster.failsafeRückwärts;
+                            System.err.println("FAILSAFE 1");
+                        }
+                    }
+                    break;
 
-                if(!rechts && !unten){
-                    failsafeModus = true; //failsafe modus aktivieren
+                case rechtsHoch:
+                    rechts = tryRechtsBewegung();
+                    
+                    oben = tryHochBewegung();
+                    if(!oben)
+                    {
+                        if(!((failsafeCounter >= 9) && (failsafeCounter <= 12)))
+                        {
+                            aktuelleBewegung = Bewegungsmuster.runterGerade;
+                        }
+                        else
+                        {
+                            if(!oben && !rechts)
+                            {
+                                aktuelleBewegung = Bewegungsmuster.failsafeRückwärts;
+                                System.err.println("FAILSAFE 2");
+                            }
+                        }
+                    }
+                    ende = testeObImZiel();
+                    break;
 
-                    normal = false;
-                    extra = false;
-                }
+                case runterGerade:
+                    rechts = tryRechtsBewegung();
+                    
+                    unten = tryRunterBewegung();
 
-                if(bot.maxX() >= 999 && bot.maxY() >= 999) {
-                    ende = true; //wenn ende des spielfeldes erreicht, dann ende
-                }
+                    if(!rechts && !unten){
+                        aktuelleBewegung = Bewegungsmuster.failsafeRückwärts; //failsafe modus aktivieren
+                        System.err.println("FAILSAFE 0");
+                    }
+
+                    ende = testeObImZiel();
+                    break;
+
+                default:
+                    ende = testeObImZiel();
             }
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
 
             Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
         }
+    }
+
+    private boolean tryRechtsBewegung()
+    {
+        bot.bewegeRechts(); //fahre einen pixel nach rechts
+        if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+            bot.bewegeLinks(); //wenn ja, dann wieder zurück
+            return  false;
+        }
+        return true;
+    }
+
+    private boolean tryLinksBewegung()
+    {
+        bot.bewegeLinks(); //fahre einen pixel nach links    
+            if(bot.roboterUeberlappt(hindernisse) || bot.minX() == -1) { //teste ob überlappt oder am linken rand
+                bot.bewegeRechts(); //wenn ja, dann wieder zurück
+                return false;
+            }
+            return true;
+    }
+
+    private boolean tryRunterBewegung()
+    {
+        bot.bewegeUnten(); //fahre einen pixel nach unten
+        if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+            bot.bewegeOben(); //wenn ja, wieder zurück
+            return false;
+        } 
+        return true;
+    }
+
+    private boolean tryHochBewegung()
+    {
+        bot.bewegeOben(); //fahre einen pixel nach oben
+            if(bot.roboterUeberlappt(hindernisse) || bot.minY() == -1) { //teste ob überlappt oder am oberem rand
+                bot.bewegeUnten(); //wenn ja, wieder zurück
+                return false;
+            }
+            return true;
+    }
+
+    private boolean testeObImZiel() //wenn ende des spielfeldes erreicht, dann true
+    {
+        return bot.maxX() >= 999 && bot.maxY() >= 999;
     }
     
     
