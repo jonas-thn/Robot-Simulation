@@ -76,6 +76,10 @@ public class Spielfeld
     /* Hindernisse Umfahren:
      * 
      * -unser roboter hat die option zwischen 4 verschiedenen bewegungsmustern und einem rückwärts-failsafe gang zu unterschieden
+     * -er schickt zuerst einen Test-Lauf (in schwaz) durch die Hindernisse, welcher anhand der Bewegungsmuster verschiedene Weg-Kombinationen probiert, um ans Ziel zu gelangen
+     * -der Test-Lauf (in schwarz) ist absichtlich sichtbar und verlangsamt, sodass man seinen fortschritt beobachten kann
+     * -anhand der gesammelten Daten vom Test-Lauf wird die schnellste Route berechnet
+     * -der eigentliche Roboter (in rot) folgt anschließend der schnellsten berechneten Route, ohne hängen zu bleiben
      * 
      * -diese methode / der alogorithmus ist aus eigener interesse als experiment entstanden 
      *  und gehört (in diesem umfang) nicht zu den offiziellen aufgaben des projekts */
@@ -272,8 +276,6 @@ public class Spielfeld
         }
         else
         {
-            
-        
             routeOptimieren();
 
             return true;
@@ -290,7 +292,6 @@ public class Spielfeld
             else
             {
                 routeOptimieren();
-
 
                 return true;
             }
@@ -334,7 +335,10 @@ public class Spielfeld
         return bot.maxX() >= 999 && bot.maxY() >= 999;
     }
 
-    private void routeOptimieren()
+    //alle positionen, die man abfährt, werden in der "routeSpeichern" liste gespeichert
+    //wenn man sich aber auf einer position befindet, die bereits in der liste ist, dann werden alle elemente zwischen den beiden gleichen positionen gelöscht
+    //so werden alle "sackgassen" oder unnötigen "kreisverkehre" aus der liste gelöscht --> übrig bleibt die optimierte route
+    private void routeOptimieren() 
     {
         int i = routeSpeichern.indexOf(bot.position);
         if(i != -1)
@@ -348,6 +352,7 @@ public class Spielfeld
         }
     }    
 
+    //fahre die route ab, die in "routeListe" gegeben wird
     private void routeAbfahren(ArrayList<Punkt> routeListe)
     {
         bot.setPosition(new Punkt(0, 0));
