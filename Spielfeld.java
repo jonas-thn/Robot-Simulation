@@ -45,7 +45,11 @@ public class Spielfeld
                     return;
 
                 case "2":
+                    punkteListe = spielfeld.punkteEingeben();
+                    spielfeld.punkteSortieren();
                     spielfeld.kreiseZeichnen();
+                    spielfeld.punkteAbfahren();
+
                     return;
                 
                 case "3":
@@ -380,9 +384,11 @@ public class Spielfeld
         try
         {
             System.out.println("Wie viele Punkte?: ");
-            int anzahlPunkte = scanner.nextInt() + 1; //+1 da wir den Startpunkt mit 0,0 nach nachträglich hinzufügen
+            int anzahlPunkte = scanner.nextInt(); //anzahl punkte eingeben
+
+            punkte.add(new Punkt(0, 0));
             
-            for(int i = 1; i < anzahlPunkte; i++) //einzelne Punkte Indexweise angeben
+            for(int i = 1; i <= anzahlPunkte; i++) //einzelne Punkte Indexweise angeben
             {        
                 punkte.add(new Punkt(0, 0));
 
@@ -400,7 +406,7 @@ public class Spielfeld
                 }
                 
                 //der eben definierte Punkt wird in das Array eingefügt
-                punkte.set(i - 1, new Punkt(x,y));
+                punkte.set(i, new Punkt(x,y));
             } 
         }
         catch(InputMismatchException e)
@@ -416,7 +422,7 @@ public class Spielfeld
     }
     
     /**
-     * Helfer Methode von punktAbfahren, die die aktuelle Liste von Punkten iteriert, um den Index des nächsten Punktes zurückzugeben.
+     * Helfer Methode von punkteSortieren, die die aktuelle Liste von Punkten iteriert, um den Index des nächsten Punktes zurückzugeben.
      * Dabei ist der Startpunkt des Element 0
      */
     public int punktFinden(List<Punkt> punkt) 
@@ -430,18 +436,18 @@ public class Spielfeld
              
              if(abstand < minAbstand) //vergleiche bisherigen kürzesten abstand mit aktuellem abstand
              {
-                 minAbstand = abstand; // neuer kleinster abstand setzen mit aktuellen abstand
-                 minPunkt = i; //neuer index vom nähchsten Punkt
+                minAbstand = abstand; // neuer kleinster abstand setzen mit aktuellen abstand
+                minPunkt = i; //neuer index vom nähchsten Punkt
              }
         }
         
         return minPunkt; //gebe index von nächsten punkt zurück
     }
     
-    public void punktAbfahren()
+    public void punkteSortieren()
     {
-        List<Punkt> übrigePunkte = new ArrayList<Punkt>();
-        List<Punkt> sortiertePunkte = new ArrayList<Punkt>();
+        ArrayList<Punkt> übrigePunkte = new ArrayList<Punkt>();
+        ArrayList<Punkt> sortiertePunkte = new ArrayList<Punkt>();
         
         for(Punkt punkt : punkteListe) //überschreiben von punkte Liste in übrige punkte
         {
@@ -455,10 +461,58 @@ public class Spielfeld
             sortiertePunkte.add(übrigePunkte.get(i)); //schreiben des nächsten Punktes in der Liste der sotierten Punkte
             übrigePunkte.remove(i); //entfernen des nächsten Punktes aus der Liste
         }
-        
-        for(Punkt p : sortiertePunkte) //sortierte Punkte mit Koordinaten ausgeben
+
+        punkteListe = sortiertePunkte;
+    }
+
+    private void punkteAbfahren()
+    {
+        bot.setPosition(new Punkt(0, 0));
+
+        for(Punkt p : punkteListe)
         {
-            System.out.println(p.getX() + " " + p.getY());
+            Punkt differenz = bot.position.gibDifferenz(p);
+
+            while(bot.position.x != p.x)
+            {
+                if(differenz.x > 0)
+                {
+                    bot.bewegeRechts();
+                    leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+                    Helfer.warten(bot.verlangsamung);
+                        
+                        
+                }
+                else if(differenz.x < 0)
+                {
+                    bot.bewegeLinks();
+                    leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+                    Helfer.warten(bot.verlangsamung);
+
+                }
+            }
+
+            while(bot.position.y != p.y)
+            {
+                if(differenz.y > 0)
+                {
+                    bot.bewegeUnten();
+                    leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+                    Helfer.warten(bot.verlangsamung);
+
+                }
+                else if(differenz.y < 0)
+                {
+                    bot.bewegeOben();
+                    leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+                    Helfer.warten(bot.verlangsamung);
+                }
+            }
+            
         }
     }
     
@@ -521,7 +575,7 @@ public class Spielfeld
     
     public void kreiseZeichnen() //zeichne kreise & keine hindernisse
     {
-        ArrayList<Punkt> punkte = punkteEingeben();
+        ArrayList<Punkt> punkte = punkteListe;
         
         zeichnen(hindernisse, punkte);
     }

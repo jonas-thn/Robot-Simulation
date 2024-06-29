@@ -53,6 +53,13 @@ public class Punkt
         return Math.hypot(dx, dy);
     }
 
+    public Punkt gibDifferenz(Punkt andererPunkt)
+    {
+        int dx = andererPunkt.x - this.x;
+        int dy = andererPunkt.y - this.y;
+        return new Punkt(dx, dy);
+    }
+
     @Override
     public boolean equals(Object o) //equals überschreiben um reference basierte vergleiche zu vermiden (wird zur optimierung der route benötigt --> damit .conatins() und .indexOf() funktionieren)
     {
