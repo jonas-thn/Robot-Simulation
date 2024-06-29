@@ -22,20 +22,48 @@ public class Spielfeld
         
     }
 
+    private void OptionWählen(Spielfeld spielfeld)
+    {
+        Scanner scanner = new Scanner(System.in); //input scanner
+        String antwort;
+
+        do
+        {
+            System.out.println("Wähle eine Option (1-4): \n 1 - Hindernisse umfahren \n 2 - Punkte abfahren \n 3 - Fragen beantworten \n 4 - Programm beenden");
+        
+            antwort = scanner.nextLine().strip();
+
+            switch (antwort)
+            {
+                case "1":
+                    spielfeld.hindernisseZeichnen();
+                    spielfeld.hindernisseUmfahren();
+                    break;
+
+                case "2":
+                    spielfeld.kreiseZeichnen();
+                    break;
+                
+                case "3":
+                    Roboter bot = Roboter.getInstanz();
+                    bot.spracherkennung();
+                    break;
+                
+                case "4":
+                    System.exit(0);
+            }
+        }
+        while((antwort != "1") || (antwort != "2") || (antwort != "3") || (antwort != "4"));
+
+    }
 
     /*--------------------------------------------------MAIN--------------------------------------------------------------*/
 
     public static void main(String[] args) //main methode mit aktueller aktion
     {   
         Spielfeld spielfeld = new Spielfeld();
-        Roboter bot = Roboter.getInstanz();
-
-        // spielfeld.hindernisseZeichnen();
-        // spielfeld.hindernisseUmfahren();
-
-        // spielfeld.kreiseZeichnen();
-
-        bot.spracherkennung();
+        
+        spielfeld.OptionWählen(spielfeld);
     }
 
     /*--------------------------------------------------MAIN--------------------------------------------------------------*/

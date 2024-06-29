@@ -20,7 +20,7 @@ public class Rechteck extends Figur
     {
         HashSet<Integer> basisRechteckX = new HashSet<Integer>(); //dieses rechteck in x und y pixel aufgeteilt
         HashSet<Integer> basisRechteckY = new HashSet<Integer>(); //2D daten-strucktur in x und y aufteilen um verwirrung zu vermeiden
-        
+        //kein HashSet<Punkt> verwenden wegen reference type comparison (wir sind nicht sicher ob die "retainAll" Methode mit komplexen Dtentypen funktioniert oder doch nur die pointer vergleicht)        
         for(int x = position.getX(); x <= (position.getX() + breite); x++)
         {
             basisRechteckX.add(x);
@@ -32,7 +32,8 @@ public class Rechteck extends Figur
         }
         
         HashSet<Integer> testRechteckX = new HashSet<Integer>(); //fremdes Rechteck in x und y pixel aufgeteilt
-        HashSet<Integer> testRechteckY = new HashSet<Integer>(); //2D daten-strucktur in X und Y aufteilen um verwirrung zu vermeiden
+        HashSet<Integer> testRechteckY = new HashSet<Integer>(); //2D daten-strucktur in X und Y aufteilen um verwirrung zu vermeiden 
+        //kein HashSet<Punkt> verwenden, wegen reference type comparison
         
         for(int x = testRechteck.getPosition().getX(); x <= (testRechteck.getPosition().getX() + testRechteck.getBreite()); x++)
         {
@@ -47,13 +48,9 @@ public class Rechteck extends Figur
         basisRechteckX.retainAll(testRechteckX); //schnittmenge zwischen basis X und test X bilden und in basisX speichern
         basisRechteckY.retainAll(testRechteckY); //schnittmenge zwischen basis x und test x bilden und in basisX speichern
         
-        if(basisRechteckX.size() > 0 && basisRechteckY.size() > 0)
-        {
-            return true; //wenn beide schnittmengen leer sind, dann keine überlappung
-        }
-
-        return false; //sonst überlappung
-        
+        return (basisRechteckX.size() > 0 && basisRechteckY.size() > 0);
+        //wenn beide schnittmengen leer sind, dann keine überlappung
+        //sonst überlappung
     } 
 
     public void ausgabeAttribute()
