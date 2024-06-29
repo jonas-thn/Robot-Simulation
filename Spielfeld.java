@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Robot;
 import java.util.*;
 
 /**
@@ -13,6 +15,8 @@ public class Spielfeld
     
     private ArrayList<Punkt> punkteListe = new ArrayList<Punkt>(); //punkte Liste
     private ArrayList<Rechteck> hindernisse; //hindernisse Liste
+
+    private ArrayList<Punkt> routeSpeichern = new ArrayList<>();
     
     private Roboter bot = Roboter.getInstanz(); //roboter singleton instanz
     Leinwand leinwand = Leinwand.getInstanz(); //leinwand singleton instanz
@@ -38,16 +42,16 @@ public class Spielfeld
                 case "1":
                     spielfeld.hindernisseZeichnen();
                     spielfeld.hindernisseUmfahren();
-                    break;
+                    return;
 
                 case "2":
                     spielfeld.kreiseZeichnen();
-                    break;
+                    return;
                 
                 case "3":
                     Roboter bot = Roboter.getInstanz();
                     bot.spracherkennung();
-                    break;
+                    return;
                 
                 case "4":
                     System.exit(0);
@@ -99,6 +103,8 @@ public class Spielfeld
         int maxFailsafe = 12; //bestimmen, wie oft der failsafe modus maximal ausgeführt wird (12 empfohlen)
         boolean rückwärtsCollision = false; //testet rückwärts-collision im failsafe-modus
         
+        bot.setFarbe(Color.black);
+
         while(!ende)
         {   
             //BREAK CONDITION
@@ -248,8 +254,13 @@ public class Spielfeld
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
 
-            Helfer.warten(bot.verlangsamung); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
+            Helfer.warten(bot.verlangsamung / 3); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
         }
+
+        bot.setFarbe(Color.red);
+
+        routeAbfahren(routeSpeichern);
+
     }
 
     private boolean tryRechtsBewegung()
@@ -259,7 +270,14 @@ public class Spielfeld
             bot.bewegeLinks(); //wenn ja, dann wieder zurück
             return  false;
         }
-        return true;
+        else
+        {
+            
+        
+            routeOptimieren();
+
+            return true;
+        }
     }
 
     private boolean tryLinksBewegung()
@@ -269,7 +287,14 @@ public class Spielfeld
                 bot.bewegeRechts(); //wenn ja, dann wieder zurück
                 return false;
             }
-            return true;
+            else
+            {
+                routeOptimieren();
+
+
+                return true;
+            }
+            
     }
 
     private boolean tryRunterBewegung()
@@ -279,7 +304,13 @@ public class Spielfeld
             bot.bewegeOben(); //wenn ja, wieder zurück
             return false;
         } 
-        return true;
+        else
+        {
+            routeOptimieren();
+
+            return true;
+        }
+        
     }
 
     private boolean tryHochBewegung()
@@ -289,14 +320,52 @@ public class Spielfeld
                 bot.bewegeUnten(); //wenn ja, wieder zurück
                 return false;
             }
-            return true;
+            else
+            {
+                routeOptimieren();
+
+                return true;
+            }
+            
     }
 
     private boolean testeObImZiel() //wenn ende des spielfeldes erreicht, dann true
     {
         return bot.maxX() >= 999 && bot.maxY() >= 999;
     }
-    
+
+    private void routeOptimieren()
+    {
+        int i = routeSpeichern.indexOf(bot.position);
+        if(i != -1)
+        {
+            routeSpeichern.subList(i, routeSpeichern.size()).clear();
+        }
+        else if(i == -1)
+        {
+            Punkt p = new Punkt(bot.position.x, bot.position.y);
+            routeSpeichern.add(p);
+        }
+    }    
+
+    private void routeAbfahren(ArrayList<Punkt> routeListe)
+    {
+        bot.setPosition(new Punkt(0, 0));
+
+        leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+        Helfer.warten(bot.verlangsamung);
+
+        for(Punkt nächster : routeListe)
+        {
+            bot.setPosition(nächster);
+
+            leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+            Helfer.warten(bot.verlangsamung);
+
+        }
+    }
     
     public ArrayList<Punkt> punkteEingeben()
     {   

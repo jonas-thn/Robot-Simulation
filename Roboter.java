@@ -97,7 +97,7 @@ public class Roboter extends Kreis
              * -das enum bewirkt im gegensatz zur if-veriante, dass nur ein zustand gleichzeitig wahr sein kann (ohne ein EnumSet<> zu verwenden und den code noch komplizierter zu machen)
              * -dadurch können nicht mehrere fragen gleichzeitig beantwortet werden
              * 
-             * --> die unten kommentierte if-string-ansatz ist unserer meinung nach ein deutlich besserer ansatz als die enum-switch variante um diese funktion zu realisieren */
+             * --> die unten kommentierte if-string-ansatz ist unserer meinung nach ein kompakterer ansatz als die enum-switch variante um diese funktion zu realisieren */
 
             // if(frage.contains("NAME")) { System.out.println("Mein Name ist Müller."); }
             // if(frage.contains("HERSTELLER")) { System.out.println("Mein Hersteller ist Thorben Thaun."); }

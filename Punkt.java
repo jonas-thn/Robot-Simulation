@@ -1,5 +1,8 @@
 
 //representiert einen punkt auf dem spielfeld
+
+import java.util.Objects;
+
 public class Punkt
 {
     public int x,y; //koordinaten
@@ -49,4 +52,24 @@ public class Punkt
         int dy = andererPunkt.y - this.y;
         return Math.hypot(dx, dy);
     }
+
+    @Override
+    public boolean equals(Object o) //equals überschreiben um reference basierte vergleiche zu vermiden (wird zur optimierung der route benötigt --> damit .conatins() und .indexOf() funktionieren)
+    {
+        Punkt p = (Punkt)o;
+        if(this.x == p.x && this.y == p.y)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() { //hash code auch überschreiben um sicher zu gehen
+        return Objects.hash(x, y);
+    }
+
 }
