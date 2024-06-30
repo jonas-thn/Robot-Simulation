@@ -33,7 +33,7 @@ public class Spielfeld
 
         do
         {
-            System.out.println("Wähle eine Option (1-4): \n 1 - Hindernisse umfahren \n 2 - Punkte abfahren \n 3 - Fragen beantworten \n 4 - Programm beenden");
+            System.out.println("Wähle eine Option (1-4): \n 1 - Hindernisse umfahren \n 2 - Punkte abfahren \n 3 - Fragen beantworten \n 4 - Programm beenden \n (5 - Test Visualisierung)");
         
             antwort = scanner.nextLine().strip();
 
@@ -59,6 +59,11 @@ public class Spielfeld
                 
                 case "4":
                     System.exit(0);
+                    
+                case "5":
+                    spielfeld.hindernisseZeichnen();
+                    spielfeld.freieFelderFindenTEST(); 
+                    //diese mtehode visualisiert, warum ein üblicher Pathfinding Algorithmus, wie BFS oder Dijkstra für 1000x1000 Felder zu anspruchsvoll ist
             }
         }
         while((antwort != "1") || (antwort != "2") || (antwort != "3") || (antwort != "4"));
@@ -108,7 +113,7 @@ public class Spielfeld
 
         boolean ende = false; //roboter ist komplett am ende
         int failsafeCounter = 0;
-        int maxFailsafe = 12; //bestimmen, wie oft der failsafe modus maximal ausgeführt wird (12 empfohlen)
+        int maxFailsafe = 24; //bestimmen, wie oft der failsafe modus maximal ausgeführt wird (12 empfohlen)
         boolean rückwärtsCollision = false; //testet rückwärts-collision im failsafe-modus
         
         bot.setFarbe(Color.black);
@@ -262,7 +267,7 @@ public class Spielfeld
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
 
-            Helfer.warten(bot.verlangsamung / 3); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
+            Helfer.warten(bot.verlangsamung / 5); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
         }
 
         bot.setFarbe(Color.red);
@@ -373,6 +378,41 @@ public class Spielfeld
 
             Helfer.warten(bot.verlangsamung);
 
+        }
+    }
+
+    /* -diese Methode geht alle 1000x1000 Felder durch, um eine Liste zu erstellen, in dem sich alle freien Felder befinden
+     * -so könnte man einen Path-Finding-Algorithmus (z.b. Breadth First Search oder Dijkstra) verwenden, um zuverlässig die schnellste route zu finden
+     * -leider sieht man an diesem Test, dass ein Path-Finding-Algorithmus für 1000x1000 Felder zu viel Leistung beansprucht / zu lange dauert
+     * -aus diesem Grund verwenden wie den "Bewegungsmuster - Ansatz" (unzuverlässiger, aber schneller) */
+    private void freieFelderFindenTEST()
+    {
+        System.out.println("Test");
+
+        ArrayList<Punkt> freieFelder = new ArrayList<Punkt>(); //liste wird nie returned, weil es sich nur um einen test handelt
+
+        for(int i = 0; i < 975; i++)
+        {
+            for(int j = 0; j < 975; j++)
+            {
+                bot.setPosition(new Punkt(i, j));
+                leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+
+
+                if(bot.roboterUeberlappt(hindernisse))
+                {
+                    continue;
+                }
+                else
+                {
+                    freieFelder.add(new Punkt(i, j));
+                }
+            }
+        }
+
+        for(Punkt p : freieFelder)
+        {
+            System.out.println(p.x + " " + p.y);
         }
     }
     
