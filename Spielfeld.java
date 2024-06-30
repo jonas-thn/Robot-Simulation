@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.GridBagConstraints;
 import java.awt.Robot;
 import java.util.*;
 
@@ -63,7 +64,7 @@ public class Spielfeld
                 case "5":
                     spielfeld.hindernisseZeichnen();
                     spielfeld.freieFelderFindenTEST(); 
-                    //diese mtehode visualisiert, warum ein üblicher Pathfinding Algorithmus, wie BFS oder Dijkstra für 1000x1000 Felder zu anspruchsvoll ist
+                    return;
             }
         }
         while((antwort != "1") || (antwort != "2") || (antwort != "3") || (antwort != "4"));
@@ -380,40 +381,22 @@ public class Spielfeld
 
         }
     }
-
-    /* -diese Methode geht alle 1000x1000 Felder durch, um eine Liste zu erstellen, in dem sich alle freien Felder befinden
-     * -so könnte man einen Path-Finding-Algorithmus (z.b. Breadth First Search oder Dijkstra) verwenden, um zuverlässig die schnellste route zu finden
-     * -leider sieht man an diesem Test, dass ein Path-Finding-Algorithmus für 1000x1000 Felder zu viel Leistung beansprucht / zu lange dauert
-     * -aus diesem Grund verwenden wie den "Bewegungsmuster - Ansatz" (unzuverlässiger, aber schneller) */
+    
     private void freieFelderFindenTEST()
     {
-        System.out.println("Test");
+        BFS pathfinding = new BFS();
+        pathfinding.FelderFinden(hindernisse);
+        bot.setPosition(new Punkt(0, 0));
 
-        ArrayList<Punkt> freieFelder = new ArrayList<Punkt>(); //liste wird nie returned, weil es sich nur um einen test handelt
+        ArrayList<Knoten> weg = pathfinding.WegErstellen();
 
-        for(int i = 0; i < 975; i++)
+        ArrayList<Punkt> route = new ArrayList<Punkt>();
+        for(Knoten k : weg)
         {
-            for(int j = 0; j < 975; j++)
-            {
-                bot.setPosition(new Punkt(i, j));
-                leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
+            route.add(k.koordinaten);
+        }        
 
-
-                if(bot.roboterUeberlappt(hindernisse))
-                {
-                    continue;
-                }
-                else
-                {
-                    freieFelder.add(new Punkt(i, j));
-                }
-            }
-        }
-
-        for(Punkt p : freieFelder)
-        {
-            System.out.println(p.x + " " + p.y);
-        }
+        routeAbfahren(route);
     }
     
     public ArrayList<Punkt> punkteEingeben()
