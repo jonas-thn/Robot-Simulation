@@ -1,12 +1,16 @@
 import java.awt.Color;
 
-//kreis erbt von figur
+/**
+* Klasse Kreis ist eine Figur
+* @author Thorben Paap
+* @author Jonas Thaun
+*/
 public class Kreis extends Figur
 {
-    protected int radius;
-
-    public Kreis() {}
+    private int radius;
     
+    public Kreis() {}
+
     public Kreis(Punkt position, int radius, String bezeichnung, Color farbe) 
     {
         super(position, bezeichnung, farbe); //figur base konstruktor aufrufen
@@ -16,7 +20,6 @@ public class Kreis extends Figur
     public void ausgabeAttribute()
     {
         System.out.println(position + "\n" + radius + "\n" + "\n" + bezeichnung + "\n" + farbe);
-
     }
     
     public void setRadius(int radius) 

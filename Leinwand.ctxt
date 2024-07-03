@@ -1,12 +1,12 @@
 #BlueJ class context
 comment0.target=Leinwand
-comment0.text=\r\n\ Leinwand\ zum\ Zeichnen\ von\ Figuren\ auf\ einer\ Zeichenflaeche.\r\n
+comment0.text=\r\n\ Leinwand\ zum\ Zeichnen\ von\ Figuren\ auf\ einer\ Zeichenflaeche.\r\n\ @author\ Thorben\ Paap\r\n\ @author\ Jonas\ Thaun\r\n
 comment1.params=
 comment1.target=Leinwand\ getInstanz()
 comment2.params=laenge\ breite
 comment2.target=Leinwand(int,\ int)
 comment2.text=\r\n\ Leinwand\ erzeugen\ indem\ laenge\ und\ breite\ gesetzt\ und\ eine\ zeichenfl\u00E4che\ zugeordnet\ wird.\r\n
 comment3.params=hindernisse\ punkte
-comment3.target=void\ zeichnen(java.util.ArrayList,\ Punkt[])
+comment3.target=void\ zeichnen(java.util.ArrayList,\ java.util.ArrayList)
 comment3.text=\r\n\ Das\ uebergebene\ Figur-Objekt\ auf\ die\ Leinwand\ zeichnen.\r\n
 numComments=4

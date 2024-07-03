@@ -1,30 +1,30 @@
-import java.awt.Robot;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
-//breadth first search
+
+/**
+ * Klasse Breath First Search als Pathfinding-Algorithmus, um den schnellsten Weg durch das Spielfeld zu finden
+ * @author Thorben Paap
+ * @author Jonas Thaun
+ */
 public class BFS 
 {
-    Punkt startKoordinate = new Punkt(0, 0);
-    Punkt zielKoordinate = new Punkt(974, 974);
-    
+    private HashMap<Punkt, Knoten> felder = new HashMap<Punkt, Knoten>();
+    private Roboter bot = Roboter.getInstanz();
+    private Leinwand leinwand = Leinwand.getInstanz();
 
-    HashMap<Punkt, Knoten> felder = new HashMap<Punkt, Knoten>();
-    Roboter bot = Roboter.getInstanz();
-    Leinwand leinwand = Leinwand.getInstanz();
+    private Punkt startKoordinate = new Punkt(0, 0);
+    private Punkt zielKoordinate = new Punkt(Leinwand.breite - 2*bot.getRadius(), Leinwand.laenge - 2*bot.getRadius());
 
-    Knoten startKnoten = new Knoten(startKoordinate, true);
-    Knoten zielKnoten = new Knoten(zielKoordinate, true);
-    Knoten aktuellerSuchKnoten;
+    private Knoten startKnoten = new Knoten(startKoordinate, true);
+    private Knoten zielKnoten = new Knoten(zielKoordinate, true);
+    private Knoten aktuellerSuchKnoten;
 
-    HashMap<Punkt, Knoten> erreichteFelder = new HashMap<Punkt, Knoten>();
-    Queue<Knoten> queue = new LinkedList<Knoten>(); //FIFO order
+    private HashMap<Punkt, Knoten> erreichteFelder = new HashMap<Punkt, Knoten>();
+    private Queue<Knoten> nächsterQueue = new LinkedList<Knoten>(); //FIFO order
 
     private Punkt[] richtungen = 
     { 
@@ -34,6 +34,7 @@ public class BFS
         new Punkt(0, 1) //runter
     };
 
+    //gib Knoten an bestimmten Punkt
     public Knoten getKnoten(Punkt koordinaten)
     {
         if(felder.containsKey(koordinaten))
@@ -44,28 +45,30 @@ public class BFS
         return null;
     }
 
+    //gib alle felder
     public HashMap<Punkt, Knoten> getFelder()
     {
         return felder;
     }
 
     // O(n^2) = ca. 1 millionen
-    public void FelderFinden(ArrayList<Rechteck> hindernisse)
+    // Scanne alle Punkte auf dem Spielfeld und erstelle entsprechende Knoten
+    public void felderFinden(ArrayList<Rechteck> hindernisse)
     {
-        for(int x = 0; x < 975; x++)
+        for(int x = 0; x < (Leinwand.breite - 2*bot.getRadius()); x++)
         {
-            for(int y = 0; y < 975; y++)
+            for(int y = 0; y < (Leinwand.laenge - 2*bot.getRadius()); y++)
             {
                 Punkt koordinaten = new Punkt(x, y);
-                bot.setPosition(koordinaten);
+                bot.setPosition(koordinaten); //setze roboter zu jedem punkt um überlappungen zu testen
                 leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
                 
-                felder.put(koordinaten, new Knoten(koordinaten, !bot.roboterUeberlappt(hindernisse)));
+                felder.put(koordinaten, new Knoten(koordinaten, !bot.roboterUeberlappt(hindernisse))); //knoten hinzufügen
             }
         }
     }
 
-    private void NachbarnFinden()
+    private void nachbarnFinden()
     {
         ArrayList<Knoten> nachbarn = new ArrayList<Knoten>();
 
@@ -85,41 +88,41 @@ public class BFS
             {
                 nachbar.verbundenMit = aktuellerSuchKnoten; //verbindung herstellen
                 erreichteFelder.put(nachbar.koordinaten, nachbar); //nachbar in erreichte felder packen
-                queue.add(nachbar); //nachbar als nächstes element in queue
+                nächsterQueue.add(nachbar); //nachbar als nächstes element in queue
             }
         }
     }
 
-    private void BreadthFirstSearch() 
+    private void breadthFirstSearch() 
     {
-        boolean isRunning = true;
+        boolean aktiv = true;
 
-        queue.add(startKnoten);
+        nächsterQueue.add(startKnoten);
         erreichteFelder.put(startKoordinate, startKnoten);
 
-        while(queue.size() > 0 && isRunning) //suche bis ziel gefunden oder queue leer (feld voll)
+        while(nächsterQueue.size() > 0 && aktiv) //suche bis ziel gefunden oder queue leer (feld voll)
         {
-            aktuellerSuchKnoten = queue.poll(); //aktueller knoten erstem element in queue setzen
+            aktuellerSuchKnoten = nächsterQueue.poll(); //aktueller knoten erstem element in queue setzen
             aktuellerSuchKnoten.erkundet = true; 
-            NachbarnFinden(); //alle nachbarn zu aktuellem knoten finden
+            nachbarnFinden(); //alle nachbarn zu aktuellem knoten finden
 
             if(aktuellerSuchKnoten.koordinaten.equals(zielKoordinate)) //wenn ziel -> fertig
             {
-                zielKnoten = aktuellerSuchKnoten; // Zielknoten setzen (?????)
-                isRunning = false;
+                zielKnoten = aktuellerSuchKnoten; // Zielknoten setzen
+                aktiv = false;
             }
         }
     }
 
-    public  ArrayList<Knoten> WegErstellen() //weg rückwärts finden
+    public  ArrayList<Knoten> wegErstellen() //weg rückwärts finden
     {
-        BreadthFirstSearch();
+        breadthFirstSearch();
 
         ArrayList<Knoten> weg = new ArrayList<Knoten>();
         Knoten aktuellerKnoten = zielKnoten; //am Zeil starten
 
         if (aktuellerKnoten == null) {
-            return weg; // falls kein Weg gefunden wurde (???????)
+            return weg; // falls kein Weg gefunden wurde
         }
 
         weg.add(aktuellerKnoten);
@@ -132,7 +135,7 @@ public class BFS
             aktuellerKnoten.istWeg = true; //aktueller knoten zu weg setzen
         }
 
-        Collections.reverse(weg);
+        Collections.reverse(weg); //liste umdrehen 
 
         return weg;
     }

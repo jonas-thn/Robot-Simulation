@@ -1,22 +1,22 @@
 import java.awt.Color;
-
-public abstract class Figur //figur base classe
+/**
+ * Klasse Figur, dessen Datenfelder und Methoden an Rechteck und Kreis vererbt werden.
+ * @author Thorben Paap
+ * @author Jonas Thaun
+ */
+public abstract class Figur //figur basis Klasse
 {
-    protected Punkt position; //gemeinsame attribute
+    protected Punkt position; //gemeinsame Attribute
     protected String bezeichnung;
     protected Color farbe;
     
-    public Figur() {}
+    protected Figur() {}
     
-    public Figur(Punkt position, String bezeichnung, Color farbe) //base constructor
+    protected Figur(Punkt position, String bezeichnung, Color farbe) //base constructor
     {
         this.position = position;
         this.bezeichnung = bezeichnung;
         this.farbe = farbe;
-        // if(farbe == Color.white) 
-        // {
-        //     System.out.println("Error color is white");
-        // } 
     }
     
     public void bewegeUm(int dx, int dy) //bewege um x/y verschiebung
@@ -83,8 +83,8 @@ public abstract class Figur //figur base classe
     }
     
     //abstakte methoden
-    abstract int minX();
-    abstract int minY();
-    abstract int maxX();
-    abstract int maxY();
+    protected abstract int minX();
+    protected abstract int minY();
+    protected abstract int maxX();
+    protected abstract int maxY();
 }

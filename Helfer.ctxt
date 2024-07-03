@@ -1,5 +1,6 @@
 #BlueJ class context
 comment0.target=Helfer
+comment0.text=\r\n\ Klasse\ f\u00FCr\ zus\u00E4tzliche\ allgmemeine\ Methoden,\ wie\ Zufallszahlen/-farben.\ Die\ Klasse\ ist\ statisch\ damit\ alle\ anderen\ Klassen\ darauf\ zugreifen\ k\u00F6nnen.\r\n\ @author\ Thorben\ Paap\r\n\ @author\ Jonas\ Thaun\r\n
 comment1.params=von\ bis
 comment1.target=int\ zufallszahl(int,\ int)
 comment2.params=
@@ -8,5 +9,4 @@ comment3.params=
 comment3.target=Punkt\ zufallsPunkt()
 comment4.params=millisekunden
 comment4.target=void\ warten(int)
-comment4.text=\r\n\ Die\ angegebenen\ Millisekunden\ warten\r\n\ \r\n\ Verwenden\ Sie\ diese\ Methode\ z.B.,\ wenn\ sich\ der\ Roboter\ zu\ schnell\ bewegt.\r\n
 numComments=5

@@ -1,6 +1,12 @@
 import java.awt.Color;
 import java.util.*;
 
+
+/**
+ * Klasse Roboter welche die Überlappung zu Hindernissen testen kann und die Sprachbefehle verarbeitet.
+ * @author Thorben Paap
+ * @author Jonas Thaun
+ */
 public class Roboter extends Kreis
 {        
     //enum an frage stichwörtern
@@ -13,19 +19,15 @@ public class Roboter extends Kreis
     }
 
     public int verlangsamung = 2; //höhere zahl = langsamere geschwindigkeit
-    static int roboterRadius = 13; //radius hier ändern
+    private static int roboterRadius = 13; //radius hier ändern
     
     static Roboter instance = new Roboter(new Punkt(0, 0), roboterRadius, "Test", Color.red); //roboter singelton pattern (nur 1x in gesamten projekt)
 
-    //virtueller Roboter als Rechteck darstellen, um überlappung zu testen
-    public Rechteck vRoboter = new Rechteck(position, 2*radius, 2*radius, "Roboter", Color.white); 
+    private Rechteck vRoboter = new Rechteck(position, 2*getRadius(), 2*getRadius(), "Roboter", Color.white);  //virtueller Roboter als Rechteck darstellen, um überlappung zu testen
 
-    Scanner scanner = new Scanner(System.in); //input scanner
+    private Scanner scanner = new Scanner(System.in); //input scanner
     
-    private Roboter()
-    {
-        
-    }
+    private Roboter() {}
     
     private Roboter(Punkt position, int radius, String bezeichnung, Color farbe) 
     {
@@ -36,7 +38,6 @@ public class Roboter extends Kreis
     {
         return instance;
     }
-    
     //teste überlappung von roboter mit hindernissen (mit hilfe von virtuellem roboter als rechteck)
     public boolean roboterUeberlappt(ArrayList<Rechteck> hindernisse) 
     {
@@ -71,27 +72,27 @@ public class Roboter extends Kreis
                     stichwort = s; //stichwort zu übereinstimmung setzen
                     break;
                 }
+            
             } 
-            
-            switch(stichwort) //je nach stichwort -> output
-            {
-                case NAME:
-                    System.out.println("Mein Name ist Müller.\n");
-                    break;
-                case HERSTELLER:
-                    System.out.println("Mein Hersteller ist Thorben Thaun.\n");
-                    break;
-                case ALT:
-                    System.out.println("Sowas fragt man nicht.\n");
-                    break;
-                case GESCHLECHT:
-                    System.out.println("Ich bin binär.\n");
-                    break;
-                default:
-                    System.out.println("Die Frage verstehe ich nicht.\n");
-                    break;
+            if(stichwort != null) {
+                switch(stichwort) //je nach stichwort -> output
+                {
+                    case NAME:
+                        System.out.println("Mein Name ist Müller.\n");
+                        break;
+                    case HERSTELLER:
+                        System.out.println("Mein Hersteller ist Thorben Thaun.\n");
+                        break;
+                    case ALT:
+                        System.out.println("Sowas fragt man nicht.\n");
+                        break;
+                    case GESCHLECHT:
+                        System.out.println("Ich bin binär.\n");
+                        break;
+                }
+            } else {
+                System.out.println("Die Frage verstehe ich nicht.\n");
             }
-            
             /* -der unten beschriebene if-ansatz ist unserer meinung nach besser für dieses problem geeignet
              * -der code ist so deutlich übersichtlicher und kürzer & man muss nur jeweils eine stelle ändern um den code zu erweitern (anstatt jeweils enum und switch)
              * -das enum bewirkt im gegensatz zur if-veriante, dass nur ein zustand gleichzeitig wahr sein kann (ohne ein EnumSet<> zu verwenden und den code noch komplizierter zu machen)

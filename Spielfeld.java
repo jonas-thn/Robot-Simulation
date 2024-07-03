@@ -4,29 +4,26 @@ import java.awt.Robot;
 import java.util.*;
 
 /**
- * Beschreiben Sie hier die Klasse Spielfeld.
- * 
- * @author (Thorben Thaun) 
- * @version (eine Versionsnummer oder ein Datum)
+ * Klasse Spielfeld, welches die Hindernisse erstellt und speichert, sowie den Roboter steuert 
+ * @author Thorben Paap
+ * @author Jonas Thaun
  */
 public class Spielfeld
-{
-    private final int laenge=1000;
-    private final int breite=1000;
-    
+{    
     private ArrayList<Punkt> punkteListe = new ArrayList<Punkt>(); //punkte Liste
     private ArrayList<Rechteck> hindernisse; //hindernisse Liste
 
     private ArrayList<Punkt> routeSpeichern = new ArrayList<>();
     
     private Roboter bot = Roboter.getInstanz(); //roboter singleton instanz
-    Leinwand leinwand = Leinwand.getInstanz(); //leinwand singleton instanz
+    private Leinwand leinwand = Leinwand.getInstanz(); //leinwand singleton instanz
 
-    public Spielfeld()
-    {
-        
-    }
+    private final int breite = Leinwand.breite;
+    private final int laenge = Leinwand.laenge;
 
+    public Spielfeld() { }
+
+    //Wähle eine Option aus, wenn das Programm gestartet wird
     private void OptionWählen(Spielfeld spielfeld)
     {
         Scanner scanner = new Scanner(System.in); //input scanner
@@ -34,40 +31,43 @@ public class Spielfeld
 
         do
         {
-            System.out.println("Wähle eine Option (1-4): \n 1 - Hindernisse umfahren \n 2 - Punkte abfahren \n 3 - Fragen beantworten \n 4 - Programm beenden \n (5 - Test Visualisierung)");
+            System.out.println("Wähle eine Option (1-5): \n 1 - Hindernisse umfahren \n 2 - Punkte abfahren \n 3 - Fragen beantworten \n 4 - Breadth First Search \n 5 - Programm beenden ");
         
             antwort = scanner.nextLine().strip();
 
             switch (antwort)
             {
-                case "1":
-                    spielfeld.hindernisseZeichnen();
+                case "1": //Hindernisse umfahren (Bewegunsmuster Algorithmus)
+                    hindernisse = hindernisListeErzeugen();
+                    zeichnen(hindernisse, punkteListe);
                     spielfeld.hindernisseUmfahren();
                     return;
 
-                case "2":
+                case "2": //Punkte abfahren
                     punkteListe = spielfeld.punkteEingeben();
                     spielfeld.punkteSortieren();
-                    spielfeld.kreiseZeichnen();
+                    zeichnen(hindernisse, punkteListe);
                     spielfeld.punkteAbfahren();
 
                     return;
                 
-                case "3":
+                case "3": //Fragen beantworten
                     Roboter bot = Roboter.getInstanz();
                     bot.spracherkennung();
                     return;
                 
-                case "4":
-                    System.exit(0);
-                    
-                case "5":
-                    spielfeld.hindernisseZeichnen();
-                    spielfeld.freieFelderFindenTEST(); 
+                case "4": //Hindernisse umfahren (Breadth First Search)
+                    hindernisse = hindernisListeErzeugen();
+                    zeichnen(hindernisse, punkteListe);
+                    spielfeld.pathfindingAlgorithm(); 
                     return;
+
+                case "5": //Programm beenden
+                    System.exit(0);
+                
             }
         }
-        while((antwort != "1") || (antwort != "2") || (antwort != "3") || (antwort != "4"));
+        while((antwort != "1") || (antwort != "2") || (antwort != "3") || (antwort != "4") || (antwort != "5"));
 
     }
 
@@ -94,7 +94,7 @@ public class Spielfeld
      * -diese methode / der alogorithmus ist aus eigener interesse als experiment entstanden 
      *  und gehört (in diesem umfang) nicht zu den offiziellen aufgaben des projekts */
      
-    public void hindernisseUmfahren() //hindernisse diagonal umfahren 
+    private void hindernisseUmfahren() //hindernisse diagonal umfahren 
     {
         enum Bewegungsmuster
         {
@@ -210,7 +210,7 @@ public class Spielfeld
                 case linksGerade:
                     links = tryLinksBewegung();
 
-                    unten = tryRunterBewegung();
+                    unten = tryRunterBewegung(); //bewege solnage links bis runter möglich ist
                     if(unten)
                     {
                         aktuelleBewegung = Bewegungsmuster.rechtsRunter; //zurück zu gang 1 (diagonal)
@@ -250,7 +250,7 @@ public class Spielfeld
                     break;
 
                 case runterGerade:
-                    rechts = tryRechtsBewegung();
+                    rechts = tryRechtsBewegung(); //gehe solange runter bis rechts möglich
                     
                     unten = tryRunterBewegung();
 
@@ -268,10 +268,10 @@ public class Spielfeld
             
             leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
 
-            Helfer.warten(bot.verlangsamung / 5); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame
+            Helfer.warten(bot.verlangsamung / 5); //roboter geschwindigkeit wird verlangsamt durch kurzes warten jeden frame (schwarzer roboter)
         }
 
-        bot.setFarbe(Color.red);
+        bot.setFarbe(Color.red); //zurücksetzen der farbe
 
         routeAbfahren(routeSpeichern);
 
@@ -280,7 +280,7 @@ public class Spielfeld
     private boolean tryRechtsBewegung()
     {
         bot.bewegeRechts(); //fahre einen pixel nach rechts
-        if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == 1000) { //teste ob überlappt oder am rechten rand
+        if(bot.roboterUeberlappt(hindernisse) || bot.maxX() == breite) { //teste ob überlappt oder am rechten rand
             bot.bewegeLinks(); //wenn ja, dann wieder zurück
             return  false;
         }
@@ -311,7 +311,7 @@ public class Spielfeld
     private boolean tryRunterBewegung()
     {
         bot.bewegeUnten(); //fahre einen pixel nach unten
-        if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == 1000) { //teste ob überlappt oder am unteren rand
+        if(bot.roboterUeberlappt(hindernisse) || bot.maxY() == laenge) { //teste ob überlappt oder am unteren rand
             bot.bewegeOben(); //wenn ja, wieder zurück
             return false;
         } 
@@ -342,7 +342,7 @@ public class Spielfeld
 
     private boolean testeObImZiel() //wenn ende des spielfeldes erreicht, dann true
     {
-        return bot.maxX() >= 999 && bot.maxY() >= 999;
+        return bot.maxX() >= (breite -1) && bot.maxY() >= (breite -1);
     }
 
     //alle positionen, die man abfährt, werden in der "routeSpeichern" liste gespeichert
@@ -382,24 +382,24 @@ public class Spielfeld
         }
     }
     
-    private void freieFelderFindenTEST()
+    private void pathfindingAlgorithm()
     {
         BFS pathfinding = new BFS();
-        pathfinding.FelderFinden(hindernisse);
+        pathfinding.felderFinden(hindernisse); //scannt alle Felder ob frei oder nicht
         bot.setPosition(new Punkt(0, 0));
 
-        ArrayList<Knoten> weg = pathfinding.WegErstellen();
+        ArrayList<Knoten> weg = pathfinding.wegErstellen(); //findet kürzesten weg mit breadth first search pathfinding-algorithmus
 
         ArrayList<Punkt> route = new ArrayList<Punkt>();
         for(Knoten k : weg)
         {
-            route.add(k.koordinaten);
+            route.add(k.koordinaten); //übersetzt knoten in punkte
         }        
 
-        routeAbfahren(route);
+        routeAbfahren(route); //fährt route ab
     }
     
-    public ArrayList<Punkt> punkteEingeben()
+    private ArrayList<Punkt> punkteEingeben()
     {   
         Scanner scanner = new Scanner(System.in);
         ArrayList<Punkt> punkte = new ArrayList<Punkt>(); //ein Array aus Punkten mit anzahlpunkte als laenge
@@ -421,11 +421,11 @@ public class Spielfeld
                 System.out.println("y für Punkt " + i);
                 int y = scanner.nextInt();
                 
-                if((x > 1000 || x < 0) || (y > 1000 || y < 0)) //prüfe ob Punkt im Spielfeld
+                if((x > breite || x < 0) || (y > laenge || y < 0)) //prüfe ob Punkt im Spielfeld
                 {
                     System.out.println("Error: Punkt außerhalb des Spielfeldes - wird zufällig gesetzt!");
-                    x = Helfer.zufallszahl(0, 1000); //zufällige Koordinaten festlegen
-                    y = Helfer.zufallszahl(0, 1000);
+                    x = Helfer.zufallszahl(0, breite); //zufällige Koordinaten festlegen
+                    y = Helfer.zufallszahl(0, laenge);
                 }
                 
                 //der eben definierte Punkt wird in das Array eingefügt
@@ -448,7 +448,7 @@ public class Spielfeld
      * Helfer Methode von punkteSortieren, die die aktuelle Liste von Punkten iteriert, um den Index des nächsten Punktes zurückzugeben.
      * Dabei ist der Startpunkt des Element 0
      */
-    public int punktFinden(List<Punkt> punkt) 
+    private int punktFinden(List<Punkt> punkt) 
     {   
         double minAbstand = Double.MAX_VALUE; //damit der nächst kleinste Abstand diesen ersetzt
         int minPunkt = 0; //erster Punkt
@@ -467,7 +467,7 @@ public class Spielfeld
         return minPunkt; //gebe index von nächsten punkt zurück
     }
     
-    public void punkteSortieren()
+    private void punkteSortieren()
     {
         ArrayList<Punkt> übrigePunkte = new ArrayList<Punkt>();
         ArrayList<Punkt> sortiertePunkte = new ArrayList<Punkt>();
@@ -488,15 +488,16 @@ public class Spielfeld
         punkteListe = sortiertePunkte;
     }
 
+    //fährt die punkte in richtiger reihenfolge ab
     private void punkteAbfahren()
     {
         bot.setPosition(new Punkt(0, 0));
 
         for(Punkt p : punkteListe)
         {
-            Punkt differenz = bot.position.gibDifferenz(p);
+            Punkt differenz = bot.position.gibDifferenz(p); //je nach differenz wählt roboter eine richtung aus
 
-            while(bot.position.x != p.x)
+            while(bot.position.x != p.x) //fahre solange bis x erreicht
             {
                 if(differenz.x > 0)
                 {
@@ -507,7 +508,7 @@ public class Spielfeld
                         
                         
                 }
-                else if(differenz.x < 0)
+                else if(differenz.x < 0) //fahre solange bis x erreicht
                 {
                     bot.bewegeLinks();
                     leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
@@ -517,7 +518,7 @@ public class Spielfeld
                 }
             }
 
-            while(bot.position.y != p.y)
+            while(bot.position.y != p.y) //fahre solange bis y erreicht
             {
                 if(differenz.y > 0)
                 {
@@ -527,7 +528,7 @@ public class Spielfeld
                     Helfer.warten(bot.verlangsamung);
 
                 }
-                else if(differenz.y < 0)
+                else if(differenz.y < 0) //fahre solange bis y erreicht
                 {
                     bot.bewegeOben();
                     leinwand.zeichenflaeche.repaint(); //jeden frame neu zeichnen
@@ -539,7 +540,7 @@ public class Spielfeld
         }
     }
     
-    public ArrayList<Rechteck> hindernisListeErzeugen() 
+    private ArrayList<Rechteck> hindernisListeErzeugen() 
     {
         ArrayList<Rechteck> rechteckListe = new ArrayList<Rechteck>(); //leere Liste von Rechtecken
         Scanner scanner = new Scanner(System.in); //scanner init
@@ -551,8 +552,9 @@ public class Spielfeld
         for(int i = 0; i < anzahl; i++)
         {
             //rechteck mit zufälliger position und farbe erstellen
-            kandidat = new Rechteck(Helfer.zufallsPunkt(), Helfer.zufallszahl(20,100),Helfer.zufallszahl(20,100), "Rechteck " + i, Helfer.zufallsfarbe());
-        
+            //zufallsPunkt vereinfacht um code zu sparen daher 900, 900 und Rechtecke mit maximaler Größe 100, 100
+            kandidat = new Rechteck(Helfer.zufallsPunkt(breite - 100, laenge - 100), Helfer.zufallszahl(20,100), Helfer.zufallszahl(20,100), "Rechteck " + i, Helfer.zufallsfarbe());
+            
             boolean überlapp = false;
             
             for(Rechteck r : rechteckListe) //überlappung mit allen bisherigen rechtecken der rechteck-liste testen
@@ -568,7 +570,7 @@ public class Spielfeld
             int freiRaum = 100;
             //start und ende bleibt im 50x50 bereich frei
             boolean imStart = (kandidat.getPosition().getX() < freiRaum) && (kandidat.getPosition().getY() < freiRaum);
-            boolean imEnde = (kandidat.maxX() > (1000 - freiRaum)) && (kandidat.maxY() > (1000 - freiRaum));
+            boolean imEnde = (kandidat.maxX() > (breite - freiRaum)) && (kandidat.maxY() > (laenge - freiRaum));
 
             if(!überlapp && !(imStart || imEnde)) //wenn keine überlappung, dann kandidat zur rechteck liste hinzufügen
             {
@@ -588,22 +590,8 @@ public class Spielfeld
         
         return rechteckListe; //liste mit rechtecken zurückgeben
     }
-    
-    public void hindernisseZeichnen() //zeichne hindenrisse & keine kreise
-    {
-        hindernisse = hindernisListeErzeugen();
-        
-        zeichnen(hindernisse, punkteListe);
-    }
-    
-    public void kreiseZeichnen() //zeichne kreise & keine hindernisse
-    {
-        ArrayList<Punkt> punkte = punkteListe;
-        
-        zeichnen(hindernisse, punkte);
-    }
-    
-    public void zeichnen(ArrayList<Rechteck> hindernisse, ArrayList<Punkt> punkte) //zeichne hindernisse oder rechtecke in leinwand
+
+    private void zeichnen(ArrayList<Rechteck> hindernisse, ArrayList<Punkt> punkte) //zeichne hindernisse oder rechtecke in leinwand
     {
         leinwand.zeichnen(hindernisse, punkte);
     }

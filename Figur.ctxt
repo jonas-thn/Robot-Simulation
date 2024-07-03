@@ -1,5 +1,6 @@
 #BlueJ class context
 comment0.target=Figur
+comment0.text=\r\n\ Klasse\ Figur,\ dessen\ Datenfelder\ und\ Methoden\ an\ Rechteck\ und\ Kreis\ vererbt\ werden.\r\n\ @author\ Thorben\ Paap\r\n\ @author\ Jonas\ Thaun\r\n
 comment1.params=
 comment1.target=Figur()
 comment10.params=bezeichnung

@@ -15,17 +15,16 @@ public class Rechteck extends Figur
         this.breite = breite;
         this.laenge = laenge;
     } 
-    
+        
     public boolean ueberlappt(Rechteck testRechteck) //prüfen ob dieses rechteck mit einem anderen rechteck überlappt mit hilfe von sets/mengen und deren schnittmenge
     {
         HashSet<Integer> basisRechteckX = new HashSet<Integer>(); //dieses rechteck in x und y pixel aufgeteilt
         HashSet<Integer> basisRechteckY = new HashSet<Integer>(); //2D daten-strucktur in x und y aufteilen um verwirrung zu vermeiden
-        //kein HashSet<Punkt> verwenden wegen reference type comparison (wir sind nicht sicher ob die "retainAll" Methode mit komplexen Dtentypen funktioniert oder doch nur die pointer vergleicht)        
+        //kein HashSet<Punkt> verwenden wegen reference type comparison       
         for(int x = position.getX(); x <= (position.getX() + breite); x++)
         {
             basisRechteckX.add(x);
         }
-        
         for(int y = position.getY(); y <= (position.getY() + laenge); y++)
         {
             basisRechteckY.add(y);
@@ -34,19 +33,17 @@ public class Rechteck extends Figur
         HashSet<Integer> testRechteckX = new HashSet<Integer>(); //fremdes Rechteck in x und y pixel aufgeteilt
         HashSet<Integer> testRechteckY = new HashSet<Integer>(); //2D daten-strucktur in X und Y aufteilen um verwirrung zu vermeiden 
         //kein HashSet<Punkt> verwenden, wegen reference type comparison
-        
         for(int x = testRechteck.getPosition().getX(); x <= (testRechteck.getPosition().getX() + testRechteck.getBreite()); x++)
         {
             testRechteckX.add(x);
         }
-        
         for(int y = testRechteck.getPosition().getY(); y <= (testRechteck.getPosition().getY() + testRechteck.getLaenge()); y++)
         {
             testRechteckY.add(y);
         }
         
         basisRechteckX.retainAll(testRechteckX); //schnittmenge zwischen basis X und test X bilden und in basisX speichern
-        basisRechteckY.retainAll(testRechteckY); //schnittmenge zwischen basis x und test x bilden und in basisX speichern
+        basisRechteckY.retainAll(testRechteckY); //schnittmenge zwischen basis Y und test Y bilden und in basisY speichern
         
         return (basisRechteckX.size() > 0 && basisRechteckY.size() > 0);
         //wenn beide schnittmengen leer sind, dann keine überlappung
@@ -56,7 +53,6 @@ public class Rechteck extends Figur
     public void ausgabeAttribute()
     {
         System.out.println(position + "\n" + laenge + "\n" + breite + "\n" + bezeichnung + "\n" + farbe);
-
     }
     
     //getter, setter, usw...
