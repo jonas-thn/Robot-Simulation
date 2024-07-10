@@ -55,9 +55,9 @@ public class BFS
     // Scanne alle Punkte auf dem Spielfeld und erstelle entsprechende Knoten
     public void felderFinden(ArrayList<Rechteck> hindernisse)
     {
-        for(int x = 0; x < (Leinwand.breite - 2*bot.getRadius()); x++)
+        for(int x = 0; x <= (Leinwand.breite - 2*bot.getRadius()); x++)
         {
-            for(int y = 0; y < (Leinwand.laenge - 2*bot.getRadius()); y++)
+            for(int y = 0; y <= (Leinwand.laenge - 2*bot.getRadius()); y++)
             {
                 Punkt koordinaten = new Punkt(x, y);
                 bot.setPosition(koordinaten); //setze roboter zu jedem punkt um überlappungen zu testen

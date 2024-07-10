@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Spielfeld
 {    
-    private ArrayList<Punkt> punkteListe = new ArrayList<Punkt>(); //punkte Liste
+    private ArrayList<Punkt> punkteListe;  //punkte Liste
     private ArrayList<Rechteck> hindernisse; //hindernisse Liste
 
     private ArrayList<Punkt> routeSpeichern = new ArrayList<>();
