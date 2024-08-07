@@ -103,7 +103,7 @@ public class BFS
         while(nächsterQueue.size() > 0 && aktiv) //suche bis ziel gefunden oder queue leer (feld voll)
         {
             aktuellerSuchKnoten = nächsterQueue.poll(); //aktueller knoten erstem element in queue setzen
-            aktuellerSuchKnoten.erkundet = true; 
+            //aktuellerSuchKnoten.erkundet = true; 
             nachbarnFinden(); //alle nachbarn zu aktuellem knoten finden
 
             if(aktuellerSuchKnoten.koordinaten.equals(zielKoordinate)) //wenn ziel -> fertig
